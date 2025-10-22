@@ -1,65 +1,45 @@
+// lib/login_dialog.dart
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class GetStartedScreen extends StatelessWidget {
-  const GetStartedScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 246, 247, 251),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 119, 72, 200),
-        title: const Text("Get Started"),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Welcome to WisQu!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 72, 72, 72),
+void showLoginDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true, // با کلیک بیرون، بسته شود
+    builder: (context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          children: [
+            // تار شدن پس‌زمینه
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(color: Colors.black.withOpacity(0.2)),
+            ),
+            // کادر فرم
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.width * 1.1,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "This is where you can get started with exploring the app, sending messages, and using all the features we offer.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color.fromARGB(150, 72, 72, 72),
-                ),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // برگرد به صفحه اصلی
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 119, 72, 200),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.width * 0.5,
+                  child: SizedBox(
+                    height: 10,
+                    width: 10,
+                    child: Image.asset("assets/logo.png"),
                   ),
                 ),
-                child: const Text(
-                  "Back",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
+      );
+    },
+  );
 }
