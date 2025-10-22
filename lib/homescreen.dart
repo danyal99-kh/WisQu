@@ -84,122 +84,70 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       body: Column(
         children: [
           Expanded(
-            child: chatProvider.messages.isEmpty
-                ? Center(
-                    child: ValueListenableBuilder<bool>(
-                      valueListenable: showWelcomeText,
-                      builder: (context, isVisible, child) {
-                        return AnimatedOpacity(
-                          duration: const Duration(milliseconds: 600),
-                          opacity: isVisible ? 1.0 : 0.0,
-                          curve: Curves.easeInOut,
-                          child: child,
-                        );
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            'assets/logo.jpg',
-                            width: screenWidth * 0.3, // 30% از عرض صفحه
-                            height: screenHeight * 0.13, // 15% از ارتفاع صفحه
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 1),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.1, // 10% از عرض صفحه
-                              vertical:
-                                  screenHeight * 0.02, // 2% از ارتفاع صفحه
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    screenWidth * 0.1, // 10% از عرض صفحه
-                                vertical:
-                                    screenHeight * 0.02, // 2% از ارتفاع صفحه
-                              ),
-                              child: Text(
-                                'WisQu\nHello, What can I help \nyou with?',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: const Color.fromARGB(255, 72, 72, 72),
-                                  fontSize:
-                                      screenWidth * 0.05, // 5% از عرض صفحه
-
-                                  fontWeight: FontWeight.bold,
-                                ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // 🔹 لیست پیام‌ها (زیر خوشامدگویی)
+                ListView.builder(
+                  controller: chatProvider.scrollController,
+                  padding: const EdgeInsets.all(12),
+                  itemCount: chatProvider.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = chatProvider.messages[index];
+                    _messageAnimController.forward(from: 0);
+                    return FadeTransition(
+                      opacity: _messageAnimController,
+                      child: SlideTransition(
+                        position:
+                            Tween<Offset>(
+                              begin: const Offset(0, 0.2),
+                              end: Offset.zero,
+                            ).animate(
+                              CurvedAnimation(
+                                parent: _messageAnimController,
+                                curve: Curves.easeOut,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    controller: chatProvider.scrollController,
-                    padding: const EdgeInsets.all(12),
-                    itemCount: chatProvider.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = chatProvider.messages[index];
-                      _messageAnimController.forward(
-                        from: 0,
-                      ); // انیمیشن ورود پیام
-                      return FadeTransition(
-                        opacity: _messageAnimController,
-                        child: SlideTransition(
-                          position:
-                              Tween<Offset>(
-                                begin: const Offset(0, 0.2),
-                                end: Offset.zero,
-                              ).animate(
-                                CurvedAnimation(
-                                  parent: _messageAnimController,
-                                  curve: Curves.easeOut,
+                        child: Column(
+                          crossAxisAlignment: message.isUser
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: message.isUser
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 14,
+                                ),
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: message.isUser
+                                      ? const Color.fromRGBO(255, 255, 253, 1)
+                                      : const Color.fromARGB(
+                                          255,
+                                          246,
+                                          247,
+                                          251,
+                                        ),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Text(
+                                  message.text,
+                                  style: const TextStyle(color: Colors.black87),
                                 ),
                               ),
-                          child: Column(
-                            crossAxisAlignment: message.isUser
-                                ? CrossAxisAlignment.end
-                                : CrossAxisAlignment.start,
-                            children: [
-                              // 🔹 خود پیام
-                              Align(
-                                alignment: message.isUser
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 14,
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: message.isUser
-                                        ? const Color.fromRGBO(255, 255, 253, 1)
-                                        : const Color.fromARGB(
-                                            255,
-                                            246,
-                                            247,
-                                            251,
-                                          ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    message.text,
-                                    style: TextStyle(
-                                      color: message.isUser
-                                          ? Colors.black87
-                                          : Colors.black87,
-                                    ),
-                                  ),
+                            ),
+                            // اگر پیام از طرف ربات بود، آیکون‌ها رو نمایش بده
+                            if (!message.isUser)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 8.0,
+                                  top: 4,
                                 ),
-                              ),
-                              // 🔹 آیکون‌ها (فقط پیام ربات)
-                              if (!message.isUser) ...[
-                                Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     _buildIconButton(
@@ -249,29 +197,77 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       },
                                     ),
                                     _buildIconButton(
-                                      icon: Icons.sync,
-                                      tooltip: 'Refresh',
+                                      icon: Icons.refresh,
+                                      tooltip: 'Regenerate',
                                       onPressed: () {
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(
                                           const SnackBar(
-                                            content: Text('refreshing... 🔄'),
+                                            content: Text(
+                                              'Regenerating response... 🔄',
+                                            ),
                                           ),
                                         );
                                       },
                                     ),
                                   ],
                                 ),
-                              ],
-                            ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                // 🔹 متن خوشامدگویی روی لیست (با انیمیشن محو)
+                ValueListenableBuilder<bool>(
+                  valueListenable: showWelcomeText,
+                  builder: (context, isVisible, child) {
+                    return AnimatedOpacity(
+                      duration: const Duration(milliseconds: 700),
+                      opacity: isVisible ? 1.0 : 0.0,
+                      curve: Curves.easeInOutCubic,
+                      child: IgnorePointer(
+                        ignoring: !isVisible, // وقتی محو شد، لمس غیرفعال بشه
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/logo.jpg',
+                        width: screenWidth * 0.3,
+                        height: screenHeight * 0.13,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.1,
+                          vertical: screenHeight * 0.02,
+                        ),
+                        child: Text(
+                          'WisQu\nHello, What can I help \nyou with?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 72, 72, 72),
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 1),
+
           // 🔹 TextField و متن پایین
           Container(
             margin: const EdgeInsets.only(bottom: 20),
@@ -328,9 +324,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           color: const Color.fromARGB(255, 119, 72, 200),
                           onPressed: () {
                             chatProvider.sendMessage();
+
+                            // اجرای انیمیشن محو شدن
                             if (showWelcomeText.value) {
-                              showWelcomeText.value =
-                                  false; // متن خوشامدگویی محو می‌شود
+                              Future.delayed(
+                                const Duration(milliseconds: 100),
+                                () {
+                                  showWelcomeText.value = false; // fade-out
+                                },
+                              );
                             }
                           },
                         ),
