@@ -35,33 +35,26 @@ void showLoginDialog(BuildContext context) {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: 2,
-                            left: 2,
-                            right: 2,
-                            top: 20,
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 1, right: 1),
+                        child: IconButton(
+                          icon: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.compare_arrows,
+                                size: 20,
+                                color: Color.fromARGB(221, 54, 53, 53),
+                              ),
+                            ],
                           ),
-                          child: IconButton(
-                            icon: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.compare_arrows,
-                                  size: 18,
-                                  color: Color.fromARGB(221, 54, 53, 53),
-                                ),
-                              ],
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                         ),
-                      ],
+                      ),
                     ),
                     // لوگو
                     SizedBox(
