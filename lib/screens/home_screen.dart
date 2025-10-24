@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:wisqu/getstarted.dart';
-import '../state/chat_provider.dart';
-import 'package:wisqu/setting.dart';
+import 'package:wisqu/screens/getstarted_screens.dart';
+import '../../state/chat_provider.dart';
+import 'package:wisqu/screens/setting_screens.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

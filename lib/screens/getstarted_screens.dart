@@ -1,6 +1,7 @@
 // lib/login_dialog.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'continue_with_email_screen.dart';
 
 void showLoginDialog(BuildContext context) {
   showDialog(
@@ -44,7 +45,7 @@ void showLoginDialog(BuildContext context) {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.compare_arrows,
+                                Icons.close_fullscreen_rounded,
                                 size: 20,
                                 color: Color.fromARGB(221, 54, 53, 53),
                               ),
@@ -93,7 +94,12 @@ void showLoginDialog(BuildContext context) {
                     // دکمه ورود با ایمیل
                     ElevatedButton(
                       onPressed: () {
-                        // عملکرد ورود با ایمیل
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ContinueWithEmailScreen(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,

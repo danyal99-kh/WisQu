@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'homescreen.dart'; // صفحه اصلی برنامه
+import 'home_screen.dart'; // صفحه اصلی برنامه
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
