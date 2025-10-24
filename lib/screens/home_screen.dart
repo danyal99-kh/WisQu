@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -62,8 +64,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ValueListenableBuilder<bool>(
                     valueListenable: showWelcomeText,
                     builder: (context, isVisible, child) {
-                      if (isVisible)
+                      if (isVisible) {
                         return const SizedBox(); // وقتی خوشامدگویی هست، خالی باشه
+                      }
                       return Row(
                         children: [
                           Hero(

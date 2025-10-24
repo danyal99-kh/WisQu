@@ -1,4 +1,6 @@
 // lib/login_dialog.dart
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'continue_with_email_screen.dart';
