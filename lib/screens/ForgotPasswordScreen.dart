@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart'; // برای TapGestureRecognizer
+import 'package:flutter/gestures.dart';
+import 'package:wisqu/screens/home_screen.dart'; // برای TapGestureRecognizer
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -16,19 +17,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   int? _focusedIndex;
-  late TapGestureRecognizer _resendRecognizer; // تعریف TapGestureRecognizer
+  late TapGestureRecognizer _resendRecognizer;
 
   @override
   void initState() {
     super.initState();
-    // مقداردهی TapGestureRecognizer در initState
     _resendRecognizer = TapGestureRecognizer()
       ..onTap = () {
-        // عملیاتی که هنگام کلیک روی "Resend code" انجام می‌شود
         print("Resend code clicked!");
-        _resendCode(); // تابع نمونه برای ارسال مجدد کد
+        _resendCode();
       };
-    // گوش دادن به تغییرات فوکوس
     for (int i = 0; i < _focusNodes.length; i++) {
       _focusNodes[i].addListener(() {
         if (_focusNodes[i].hasFocus) {
@@ -42,7 +40,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   void dispose() {
-    _resendRecognizer.dispose(); // آزادسازی TapGestureRecognizer
+    _resendRecognizer.dispose();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -52,30 +50,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  // تابع نمونه برای ارسال مجدد کد
   void _resendCode() {
-    // منطق ارسال مجدد کد (مثل درخواست به سرور)
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Code resent successfully!')));
   }
 
-  Widget _buildCodeInput(int index) {
+  Widget _buildCodeInput(int index, double screenWidth) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       transform: Matrix4.identity()..scale(_focusedIndex == index ? 1.1 : 1.0),
-      width: 45,
+      width: screenWidth * 0.12, // 12% عرض صفحه برای هر باکس
+      height: screenWidth * 0.12, // ارتفاع برابر با عرض برای شکل مربعی
       child: TextField(
         controller: _controllers[index],
         focusNode: _focusNodes[index],
         maxLength: 1,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: screenWidth * 0.05, // اندازه فونت نسبی
+          fontWeight: FontWeight.bold,
+        ),
         decoration: InputDecoration(
           counterText: '',
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          contentPadding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: _focusedIndex == index ? Colors.deepPurple : Colors.grey,
@@ -100,23 +100,51 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // دریافت اطلاعات MediaQuery
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final _ = mediaQuery.orientation == Orientation.landscape;
+
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          },
+        ),
+        title: const Text('auth.wisq.ai'),
+        actions: [IconButton(icon: const Icon(Icons.shield), onPressed: () {})],
+      ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.06,
+        ), // 6% عرض صفحه
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Enter the 6-digit code sent to your email',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+              style: TextStyle(
+                fontSize: screenWidth * 0.04, // اندازه فونت نسبی
+                fontWeight: FontWeight.w900,
+              ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: screenHeight * 0.02), // 2% ارتفاع صفحه
             RichText(
               textAlign: TextAlign.left,
               text: TextSpan(
-                style: const TextStyle(fontSize: 14, color: Colors.black87),
+                style: TextStyle(
+                  fontSize: screenWidth * 0.035,
+                  color: Colors.black87,
+                ),
                 children: [
                   const TextSpan(text: 'We have sent a'),
                   TextSpan(
@@ -127,25 +155,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ],
               ),
             ),
-            const Text(
+            Text(
               'Please enter the code to continue.',
-              style: TextStyle(fontSize: 14, color: Colors.black87),
+              style: TextStyle(
+                fontSize: screenWidth * 0.035,
+                color: Colors.black87,
+              ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: screenHeight * 0.03),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(6, (index) => _buildCodeInput(index)),
+              children: List.generate(
+                6,
+                (index) => _buildCodeInput(index, screenWidth),
+              ),
             ),
-            const SizedBox(height: 20),
-            const Text(
+            SizedBox(height: screenHeight * 0.025),
+            Text(
               "Didn't receive the email? Check your spam folder or",
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+              style: TextStyle(
+                fontSize: screenWidth * 0.035,
+                color: Colors.black54,
+              ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: screenHeight * 0.005),
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                style: const TextStyle(fontSize: 14, color: Colors.black87),
+                style: TextStyle(
+                  fontSize: screenWidth * 0.035,
+                  color: Colors.black87,
+                ),
                 children: [
                   TextSpan(
                     text: 'Resend code',
@@ -154,31 +194,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       color: Color.fromARGB(255, 236, 90, 155),
                       decoration: TextDecoration.underline,
                     ),
-                    recognizer: _resendRecognizer, // اتصال TapGestureRecognizer
+                    recognizer: _resendRecognizer,
                   ),
                   const TextSpan(text: ' in 01:00'),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: screenHeight * 0.04),
             SizedBox(
               width: double.infinity,
-              height: 40,
+              height: screenHeight * 0.06, // 6% ارتفاع صفحه
               child: ElevatedButton(
                 onPressed: () {
                   // Handle continue
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 40),
+                  minimumSize: Size(double.infinity, screenHeight * 0.06),
                   backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Continue',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
