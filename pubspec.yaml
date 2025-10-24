@@ -55,8 +55,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/logo.jpg
-
+    - assets/logo.png
+    - assets/google-logo.png
 
 
   # The following line ensures that the Material Icons font is
