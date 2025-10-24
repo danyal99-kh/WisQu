@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:wisqu/screens/confrimPasswordScreen.dart';
 import 'package:wisqu/screens/home_screen.dart'; // برای TapGestureRecognizer
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -206,7 +207,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               height: screenHeight * 0.06, // 6% ارتفاع صفحه
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle continue
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreatePasswordScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, screenHeight * 0.06),
