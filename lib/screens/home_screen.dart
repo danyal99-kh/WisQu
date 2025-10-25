@@ -51,9 +51,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(2, 8),
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 6,
+                    offset: const Offset(2, 5),
                   ),
                 ],
               ),
@@ -334,22 +334,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(150, 237, 242, 248),
+                      color: const Color.fromARGB(255, 237, 242, 248),
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 216, 216, 216),
-                      ),
+                      border: Border.all(),
                       boxShadow: [
                         BoxShadow(
                           color: const Color.fromARGB(
-                            255,
-                            58,
-                            53,
-                            53,
-                          ).withAlpha(25),
-                          blurRadius: 10,
-                          spreadRadius: 5,
-                          offset: const Offset(0, 4),
+                            146,
+                            0,
+                            0,
+                            0,
+                          ).withOpacity(0.4),
+                          blurRadius: 6,
+                          offset: const Offset(1, 4),
                         ),
                       ],
                     ),
