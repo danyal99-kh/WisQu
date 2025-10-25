@@ -142,41 +142,70 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 style: TextStyle(fontSize: screenWidth * 0.04),
               ),
               SizedBox(height: screenHeight * 0.02),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Password',
-                    style: TextStyle(fontSize: screenWidth * 0.04),
-                  ),
-                ],
-              ),
+              Row(mainAxisAlignment: MainAxisAlignment.start),
               SizedBox(
-                height: screenHeight * 0.02,
+                height: screenHeight * 0.01,
               ), // فاصله بین متن و TextField
-              TextField(
-                controller: _passwordController,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  label: const Text('Password'),
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Password", style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 6),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(240, 244, 250, 1),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        textAlign: TextAlign.start,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.lock_outline,
+                            color: Color.fromRGBO(93, 63, 211, 1),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: const Color.fromRGBO(93, 63, 211, 1),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: const Color.fromRGBO(240, 244, 250, 1),
+                          hintText: "Enter your password",
+                          errorStyle: const TextStyle(
+                            color: Color.fromARGB(255, 230, 81, 70),
+                            fontSize: 14,
+                          ),
+                        ),
+                        onChanged: (value) => _updateProgress(value),
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
-                  border: OutlineInputBorder(),
+                  ],
                 ),
-                obscureText: !_isPasswordVisible,
-                onChanged: (value) => _updateProgress(value),
               ),
+
               SizedBox(height: screenHeight * 0.01),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -254,42 +283,69 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: screenHeight * 0.01),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Confirm Password',
-                    style: TextStyle(fontSize: screenWidth * 0.04),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: screenHeight * 0.02,
-              ), // فاصله بین متن و TextField
-              TextField(
-                controller: _confirmPasswordController,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isConfirmPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Confirm Password",
+                      style: TextStyle(fontSize: 16),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                      });
-                    },
-                  ),
-                  border: OutlineInputBorder(),
-                  errorText: _confirmPasswordError,
+                    const SizedBox(height: 6),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(240, 244, 250, 1),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        textAlign: TextAlign.start,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.lock_outline,
+                            color: Color.fromRGBO(93, 63, 211, 1),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: const Color.fromRGBO(93, 63, 211, 1),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: const Color.fromRGBO(240, 244, 250, 1),
+                          hintText: "Confirm password",
+                          errorStyle: const TextStyle(
+                            color: Color.fromARGB(255, 230, 81, 70),
+                            fontSize: 14,
+                          ),
+                        ),
+                        onChanged: (value) => _updateProgress(value),
+                      ),
+                    ),
+                  ],
                 ),
-                obscureText: !_isConfirmPasswordVisible,
-                onChanged: (value) => _validateConfirmPassword(value),
               ),
+
               SizedBox(height: screenHeight * 0.04),
               ElevatedButton(
                 onPressed: () {
