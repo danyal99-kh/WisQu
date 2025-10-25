@@ -297,10 +297,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                  minimumSize: Size(
-                    screenWidth * 0.9,
-                    screenHeight * 0.06,
-                  ), // ارتفاع 6 درصد
+                  minimumSize: Size(double.infinity, 40), // ارتفاع 40 پیکسل
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),

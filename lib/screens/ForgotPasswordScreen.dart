@@ -204,7 +204,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             SizedBox(height: screenHeight * 0.04),
             SizedBox(
               width: double.infinity,
-              height: screenHeight * 0.06, // 6% ارتفاع صفحه
+              height: 40, // 40 پیکسل ارتفاع صفحه
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
