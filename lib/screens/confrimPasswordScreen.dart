@@ -104,256 +104,266 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         actions: [IconButton(icon: const Icon(Icons.shield), onPressed: () {})],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(screenWidth * 0.04),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start, // شروع از بالا
-            children: [
-              SizedBox(height: screenHeight * 0.05), // کاهش فاصله از بالا
-              Text(
-                'Create Your Password',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.05, // کاهش اندازه فونت
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.015),
-              Text(
-                'Please create a strong password that is easy for you to remember but difficult for others to guess.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.035,
-                ), // کاهش اندازه فونت
-              ),
-              SizedBox(height: screenHeight * 0.02),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Password", style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 6),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(240, 244, 250, 1),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        textAlign: TextAlign.start,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.lock_outline,
-                            color: Color.fromRGBO(93, 63, 211, 1),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: const Color.fromRGBO(93, 63, 211, 1),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: const Color.fromRGBO(240, 244, 250, 1),
-                          hintText: "Enter your password",
-                          errorStyle: const TextStyle(
-                            color: Color.fromARGB(255, 230, 81, 70),
-                            fontSize: 14,
-                          ),
-                        ),
-                        onChanged: (value) => _updateProgress(value),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.01),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 19,
-                    color: const Color.fromRGBO(93, 63, 211, 1),
-                  ),
-                  SizedBox(width: screenWidth * 0.005),
-                  Container(
-                    width: textFieldWidth * 0.225,
-                    height: 4.0,
-                    decoration: BoxDecoration(
-                      color: _strengthLevel >= 0.0
-                          ? Colors.red
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(screenWidth * 0.01),
-                    ),
-                  ),
-                  SizedBox(width: screenWidth * 0.005),
-                  Container(
-                    width: textFieldWidth * 0.225,
-                    height: 4.0,
-                    decoration: BoxDecoration(
-                      color: _strengthLevel >= 1.0
-                          ? Colors.yellow
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(screenWidth * 0.01),
-                    ),
-                  ),
-                  SizedBox(width: screenWidth * 0.005),
-                  Container(
-                    width: textFieldWidth * 0.225,
-                    height: 4.0,
-                    decoration: BoxDecoration(
-                      color: _strengthLevel >= 2.0
-                          ? Colors.green
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(screenWidth * 0.01),
-                    ),
-                  ),
-                  SizedBox(width: screenWidth * 0.005),
-                  Container(
-                    width: textFieldWidth * 0.225,
-                    height: 4.0,
-                    decoration: BoxDecoration(
-                      color: _strengthLevel >= 3.0
-                          ? Colors.green[700]!
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(screenWidth * 0.01),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: screenHeight * 0.005),
-              Text(
-                _strengthLevel == 0.0
-                    ? 'Weak'
-                    : _strengthLevel == 1.0
-                    ? 'Medium'
-                    : _strengthLevel == 2.0
-                    ? 'Good'
-                    : 'Very Strong',
-                style: TextStyle(
-                  color: _strengthLevel == 0.0
-                      ? Colors.red
-                      : _strengthLevel == 1.0
-                      ? Colors.yellow
-                      : _strengthLevel == 2.0
-                      ? Colors.green
-                      : Colors.green[700],
-                  fontSize: screenWidth * 0.04,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: screenHeight * 0.01),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Confirm Password",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(240, 244, 250, 1),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        controller: _confirmPasswordController, // اصلاح کنترلر
-                        obscureText: !_isConfirmPasswordVisible,
-                        textAlign: TextAlign.start,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.lock_outline,
-                            color: Color.fromRGBO(93, 63, 211, 1),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isConfirmPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: const Color.fromRGBO(93, 63, 211, 1),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isConfirmPasswordVisible =
-                                    !_isConfirmPasswordVisible;
-                              });
-                            },
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: const Color.fromRGBO(240, 244, 250, 1),
-                          hintText: "Confirm password",
-                          errorText: _confirmPasswordError,
-                          errorStyle: const TextStyle(
-                            color: Color.fromARGB(255, 230, 81, 70),
-                            fontSize: 14,
-                          ),
-                        ),
-                        onChanged: (value) => _validateConfirmPassword(value),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.04),
-              ElevatedButton(
-                onPressed: () {
-                  if (_confirmPasswordError == null && _strengthLevel >= 2.0) {
-                    // اقدام برای ایجاد حساب
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                  minimumSize: Size(double.infinity, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  ),
-                ),
-                child: Text(
-                  'Create Account',
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          child: Padding(
+            padding: EdgeInsets.all(screenWidth * 0.04),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start, // شروع از بالا
+              children: [
+                SizedBox(height: screenHeight * 0.05), // کاهش فاصله از بالا
+                Text(
+                  'Create Your Password',
                   style: TextStyle(
-                    fontSize: screenWidth * 0.045,
-                    color: Colors.white,
+                    fontSize: screenWidth * 0.05, // کاهش اندازه فونت
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              SizedBox(
-                height: bottomInset > 0
-                    ? screenHeight * 0.02
-                    : screenHeight * 0.1,
-              ),
-            ],
+                SizedBox(height: screenHeight * 0.015),
+                Text(
+                  'Please create a strong password that is easy for you to remember but difficult for others to guess.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.035,
+                  ), // کاهش اندازه فونت
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Password", style: TextStyle(fontSize: 16)),
+                      const SizedBox(height: 6),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(240, 244, 250, 1),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          textAlign: TextAlign.start,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Color.fromRGBO(93, 63, 211, 1),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: const Color.fromRGBO(93, 63, 211, 1),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(30),
+                              ),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: const Color.fromRGBO(240, 244, 250, 1),
+                            hintText: "Enter your password",
+                            errorStyle: const TextStyle(
+                              color: Color.fromARGB(255, 230, 81, 70),
+                              fontSize: 14,
+                            ),
+                          ),
+                          onChanged: (value) => _updateProgress(value),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.01),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 19,
+                      color: const Color.fromRGBO(93, 63, 211, 1),
+                    ),
+                    SizedBox(width: screenWidth * 0.005),
+                    Container(
+                      width: textFieldWidth * 0.225,
+                      height: 4.0,
+                      decoration: BoxDecoration(
+                        color: _strengthLevel >= 0.0
+                            ? Colors.red
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(screenWidth * 0.01),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.005),
+                    Container(
+                      width: textFieldWidth * 0.225,
+                      height: 4.0,
+                      decoration: BoxDecoration(
+                        color: _strengthLevel >= 1.0
+                            ? Colors.yellow
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(screenWidth * 0.01),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.005),
+                    Container(
+                      width: textFieldWidth * 0.225,
+                      height: 4.0,
+                      decoration: BoxDecoration(
+                        color: _strengthLevel >= 2.0
+                            ? Colors.green
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(screenWidth * 0.01),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.005),
+                    Container(
+                      width: textFieldWidth * 0.225,
+                      height: 4.0,
+                      decoration: BoxDecoration(
+                        color: _strengthLevel >= 3.0
+                            ? Colors.green[700]!
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(screenWidth * 0.01),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.005),
+                Text(
+                  _strengthLevel == 0.0
+                      ? 'Weak'
+                      : _strengthLevel == 1.0
+                      ? 'Medium'
+                      : _strengthLevel == 2.0
+                      ? 'Good'
+                      : 'Very Strong',
+                  style: TextStyle(
+                    color: _strengthLevel == 0.0
+                        ? Colors.red
+                        : _strengthLevel == 1.0
+                        ? Colors.yellow
+                        : _strengthLevel == 2.0
+                        ? Colors.green
+                        : Colors.green[700],
+                    fontSize: screenWidth * 0.04,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: screenHeight * 0.01),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Confirm Password",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(240, 244, 250, 1),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller:
+                              _confirmPasswordController, // اصلاح کنترلر
+                          obscureText: !_isConfirmPasswordVisible,
+                          textAlign: TextAlign.start,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Color.fromRGBO(93, 63, 211, 1),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isConfirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: const Color.fromRGBO(93, 63, 211, 1),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
+                                });
+                              },
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(30),
+                              ),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: const Color.fromRGBO(240, 244, 250, 1),
+                            hintText: "Confirm password",
+                            errorText: _confirmPasswordError,
+                            errorStyle: const TextStyle(
+                              color: Color.fromARGB(255, 230, 81, 70),
+                              fontSize: 14,
+                            ),
+                          ),
+                          onChanged: (value) => _validateConfirmPassword(value),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.04),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_confirmPasswordError == null &&
+                        _strengthLevel >= 2.0) {
+                      // اقدام برای ایجاد حساب
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
+                    minimumSize: Size(double.infinity, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                    ),
+                  ),
+                  child: Text(
+                    'Create Account',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.045,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: bottomInset > 0
+                      ? screenHeight * 0.02
+                      : screenHeight * 0.1,
+                ),
+              ],
+            ),
           ),
         ),
       ),
