@@ -104,7 +104,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     final textFieldWidth = screenWidth * 0.92; // 92% از عرض صفحه
 
     return Scaffold(
-      resizeToAvoidBottomInset: true, // تنظیم خودکار با کیبورد
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         // backgroundColor: Colors.white,
         leading: IconButton(
@@ -123,9 +124,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         child: Padding(
           padding: EdgeInsets.all(screenWidth * 0.04),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // وسط‌چین عمودی
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: screenHeight * 0.1), // فاصله از بالا
+
               Text(
                 'Create Your Password',
                 style: TextStyle(
