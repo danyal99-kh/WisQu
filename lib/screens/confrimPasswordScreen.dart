@@ -106,7 +106,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true, // تنظیم خودکار با کیبورد
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
@@ -175,7 +175,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 obscureText: !_isPasswordVisible,
                 onChanged: (value) => _updateProgress(value),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: screenHeight * 0.01),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -187,7 +187,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   SizedBox(width: screenWidth * 0.005), // فاصله کمتر
                   Container(
                     width: textFieldWidth * 0.225, // عرض کمتر برای هر بخش
-                    height: 8.0,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 0.0
                           ? Colors.red
@@ -198,7 +198,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   SizedBox(width: screenWidth * 0.005), // فاصله کمتر
                   Container(
                     width: textFieldWidth * 0.225,
-                    height: 8.0,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 1.0
                           ? Colors.yellow
@@ -209,7 +209,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   SizedBox(width: screenWidth * 0.005),
                   Container(
                     width: textFieldWidth * 0.225,
-                    height: 8.0,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 2.0
                           ? Colors.green
@@ -220,7 +220,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   SizedBox(width: screenWidth * 0.005),
                   Container(
                     width: textFieldWidth * 0.225,
-                    height: 8.0,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 3.0
                           ? Colors.green[700]!
@@ -230,7 +230,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: screenHeight * 0.005),
               Text(
                 _strengthLevel == 0.0
                     ? 'Weak'
