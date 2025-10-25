@@ -107,7 +107,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        // backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
@@ -182,9 +182,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.shield,
+                    Icons.info_outline,
                     size: 19,
-                    color: const Color.fromARGB(255, 44, 168, 221),
+                    color: const Color.fromRGBO(93, 63, 211, 1),
                   ), // آیکون سپر
                   SizedBox(width: screenWidth * 0.005), // فاصله کمتر
                   Container(
