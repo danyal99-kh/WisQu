@@ -35,10 +35,7 @@ class _LoginPageState extends State<LoginPage>
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
         title: const Text('auth.wisq.ai'),
@@ -50,7 +47,7 @@ class _LoginPageState extends State<LoginPage>
         // وقتی کیبورد باز میشه، کل محتوا کمی بالا میاد
         transform: Matrix4.translationValues(
           0,
-          isKeyboardOpen ? -size.height * 0.15 : 0, // مقدار بالا رفتن
+          isKeyboardOpen ? -size.height * 0.09 : 0, // مقدار بالا رفتن
           0,
         ),
         child: Column(

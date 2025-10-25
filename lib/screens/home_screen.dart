@@ -340,10 +340,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       boxShadow: [
                         BoxShadow(
                           color: const Color.fromARGB(
-                            146,
-                            0,
-                            0,
-                            0,
+                            255,
+                            2,
+                            2,
+                            2,
                           ).withOpacity(0.4),
                           blurRadius: 6,
                           offset: const Offset(1, 4),
@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               hintText: "What do you want to know?",
                               border: InputBorder.none,
                               hintStyle: TextStyle(
-                                color: Color.fromARGB(137, 79, 79, 80),
+                                color: Color.fromARGB(255, 72, 72, 116),
                               ),
                             ),
                           ),
@@ -396,16 +396,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       margin: EdgeInsets.only(
                         bottom: screenHeight * 0.002,
                       ), // خیلی نزدیک به پایین
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
+                      padding: EdgeInsets.symmetric(
+                        horizontal:
+                            screenWidth *
+                            0.05, // فاصله افقی با توجه به اندازه صفحه
+                        vertical: screenHeight * 0.003, // فاصله عمودی متناسب
                       ), // padding کمی برای زیبایی
-                      child: const Text(
-                        "We store cookies to improve your experience. \n Policy.",
+                      child: Text(
+                        "Trained on religious ruling questions. By messaging, you agree to our Terms and Privacy Policy.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color.fromARGB(150, 175, 177, 181),
-                          fontSize: 13,
+                          color: const Color.fromARGB(150, 175, 177, 181),
+                          fontSize:
+                              screenWidth * 0.035, // فونت متناسب با عرض صفحه
                           fontWeight: FontWeight.w500,
                         ),
                       ),

@@ -111,10 +111,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
         title: const Text('auth.wisq.ai'),
