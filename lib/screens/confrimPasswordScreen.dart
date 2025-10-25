@@ -5,7 +5,6 @@ class CreatePasswordScreen extends StatefulWidget {
   const CreatePasswordScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _CreatePasswordScreenState createState() => _CreatePasswordScreenState();
 }
 
@@ -18,31 +17,64 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
+  // تابع محاسبه قدرت رمز با امتیازدهی پویا
   void _updateProgress(String password) {
     print('Password entered: $password'); // دیباگ برای چک کردن ورودی
     setState(() {
-      if (password.length < 8) {
+      int score = 0;
+
+      // 1. امتیاز طول (حداکثر 20)
+      if (password.length >= 8) {
+        score += 20 + ((password.length - 8) * 2).clamp(0, 20);
+      }
+
+      // 2. تنوع کاراکترها (حداکثر 40)
+      if (password.contains(RegExp(r'[A-Z]'))) score += 10; // حروف بزرگ
+      if (password.contains(RegExp(r'[a-z]'))) score += 10; // حروف کوچک
+      if (password.contains(RegExp(r'[0-9]'))) score += 10; // اعداد
+      if (password.contains(RegExp(r'[!@#\$%^&*]'))) score += 10; // علامت‌ها
+
+      // 3. عدم تکرار و الگوهای ساده (حداکثر 20)
+      if (!_hasRepetitivePattern(password)) score += 20;
+
+      // 4. پیچیدگی (حداکثر 20)
+      int charTypes = 0;
+      if (password.contains(RegExp(r'[A-Z]'))) charTypes++;
+      if (password.contains(RegExp(r'[a-z]'))) charTypes++;
+      if (password.contains(RegExp(r'[0-9]'))) charTypes++;
+      if (password.contains(RegExp(r'[!@#\$%^&*]'))) charTypes++;
+      if (charTypes >= 3) score += 20;
+
+      // تبدیل امتیاز به سطح (0-100 به 0-3)
+      if (score <= 25) {
         _strengthLevel = 0.0; // ضعیف
+      } else if (score <= 50) {
+        _strengthLevel = 1.0; // متوسط
+      } else if (score <= 75) {
+        _strengthLevel = 2.0; // خوب
       } else {
-        if (password.contains(RegExp(r'[A-Z]'))) {
-          if (password.contains(RegExp(r'[0-9]'))) {
-            if (password.contains(RegExp(r'[!@#\$%^&*]'))) {
-              _strengthLevel = 3.0; // خیلی قوی
-            } else {
-              _strengthLevel = 2.0; // خوب
-            }
-          } else {
-            _strengthLevel = 1.0; // متوسط
-          }
-        } else if (password.contains(RegExp(r'[0-9]')) &&
-            password.contains(RegExp(r'[!@#\$%^&*]'))) {
-          _strengthLevel =
-              2.0; // خوب (حرف بزرگ الزامی نیست اگه عدد و علامت باشه)
-        } else {
-          _strengthLevel = 0.0; // ضعیف
-        }
+        _strengthLevel = 3.0; // خیلی قوی
       }
     });
+  }
+
+  // تابع چک کردن الگوهای تکراری
+  bool _hasRepetitivePattern(String password) {
+    // چک کردن تکرارهای متوالی (مثل "aaa" یا "111")
+    for (int i = 0; i < password.length - 2; i++) {
+      if (password[i] == password[i + 1] && password[i] == password[i + 2]) {
+        return true;
+      }
+    }
+    // چک کردن الگوهای عددی ساده (مثل 123 یا 321)
+    if (password.contains(
+      RegExp(
+        r'(012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210)',
+      ),
+    )) {
+      return true;
+    }
+    return false;
   }
 
   void _validateConfirmPassword(String confirmPassword) {
@@ -68,11 +100,14 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // عرض TextField بدون پدینگ و حاشیه
+    final textFieldWidth = screenWidth * 0.92; // 92% از عرض صفحه
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
@@ -91,7 +126,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: screenHeight * 0.1),
+              SizedBox(height: screenHeight * 0.1), // فاصله از بالا
+
               Text(
                 'Create Your Password',
                 style: TextStyle(
@@ -105,12 +141,24 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: screenWidth * 0.04),
               ),
-              SizedBox(height: screenHeight * 0.04),
+              SizedBox(height: screenHeight * 0.02),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Password',
+                    style: TextStyle(fontSize: screenWidth * 0.04),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ), // فاصله بین متن و TextField
               TextField(
                 controller: _passwordController,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  label: const Text('Password'),
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -129,13 +177,19 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 obscureText: !_isPasswordVisible,
                 onChanged: (value) => _updateProgress(value),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: screenHeight * 0.01),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Icon(
+                    Icons.shield,
+                    size: 19,
+                    color: const Color.fromARGB(255, 44, 168, 221),
+                  ), // آیکون سپر
+                  SizedBox(width: screenWidth * 0.005), // فاصله کمتر
                   Container(
-                    width: screenWidth * 0.12,
-                    height: screenHeight * 0.02,
+                    width: textFieldWidth * 0.225, // عرض کمتر برای هر بخش
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 0.0
                           ? Colors.red
@@ -143,10 +197,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       borderRadius: BorderRadius.circular(screenWidth * 0.01),
                     ),
                   ),
-                  SizedBox(width: screenWidth * 0.025),
+                  SizedBox(width: screenWidth * 0.005), // فاصله کمتر
                   Container(
-                    width: screenWidth * 0.12,
-                    height: screenHeight * 0.02,
+                    width: textFieldWidth * 0.225,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 1.0
                           ? Colors.yellow
@@ -154,10 +208,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       borderRadius: BorderRadius.circular(screenWidth * 0.01),
                     ),
                   ),
-                  SizedBox(width: screenWidth * 0.025),
+                  SizedBox(width: screenWidth * 0.005),
                   Container(
-                    width: screenWidth * 0.12,
-                    height: screenHeight * 0.02,
+                    width: textFieldWidth * 0.225,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 2.0
                           ? Colors.green
@@ -165,10 +219,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       borderRadius: BorderRadius.circular(screenWidth * 0.01),
                     ),
                   ),
-                  SizedBox(width: screenWidth * 0.025),
+                  SizedBox(width: screenWidth * 0.005),
                   Container(
-                    width: screenWidth * 0.12,
-                    height: screenHeight * 0.02,
+                    width: textFieldWidth * 0.225,
+                    height: 4.0,
                     decoration: BoxDecoration(
                       color: _strengthLevel >= 3.0
                           ? Colors.green[700]!
@@ -178,7 +232,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: screenHeight * 0.005),
               Text(
                 _strengthLevel == 0.0
                     ? 'Weak'
@@ -199,7 +253,19 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: screenHeight * 0.04),
+              SizedBox(height: screenHeight * 0.01),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Confirm Password',
+                    style: TextStyle(fontSize: screenWidth * 0.04),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ), // فاصله بین متن و TextField
               TextField(
                 controller: _confirmPasswordController,
                 textAlign: TextAlign.center,
@@ -233,9 +299,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                  minimumSize: Size(screenWidth * 0.9, screenHeight * 0.07),
+                  minimumSize: Size(
+                    screenWidth * 0.9,
+                    screenHeight * 0.06,
+                  ), // ارتفاع 6 درصد
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.025),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),
                 ),
                 child: Text(
@@ -246,7 +315,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.1), // فاصله از پایین برای تعادل
+              SizedBox(height: screenHeight * 0.1), // فاصله از پایین
             ],
           ),
         ),
