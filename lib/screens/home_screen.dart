@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:wisqu/screens/getstarted_screens.dart';
 import '../../state/chat_provider.dart';
 import 'package:wisqu/screens/setting_screens.dart';
+import 'package:frosted_glass_effect/frosted_glass_effect.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,13 +48,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(150, 237, 242, 248),
+                color: const Color.fromARGB(255, 237, 242, 248),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
+                    color: const Color.fromARGB(255, 2, 2, 2).withOpacity(0.4),
                     blurRadius: 6,
-                    offset: const Offset(2, 5),
+                    offset: const Offset(1, 4),
                   ),
                 ],
               ),
@@ -336,7 +337,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 237, 242, 248),
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(),
                       boxShadow: [
                         BoxShadow(
                           color: const Color.fromARGB(
@@ -399,7 +399,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       padding: EdgeInsets.symmetric(
                         horizontal:
                             screenWidth *
-                            0.05, // فاصله افقی با توجه به اندازه صفحه
+                            0.030, // فاصله افقی با توجه به اندازه صفحه
                         vertical: screenHeight * 0.003, // فاصله عمودی متناسب
                       ), // padding کمی برای زیبایی
                       child: Text(
@@ -408,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         style: TextStyle(
                           color: const Color.fromARGB(150, 175, 177, 181),
                           fontSize:
-                              screenWidth * 0.035, // فونت متناسب با عرض صفحه
+                              screenWidth * 0.030, // فونت متناسب با عرض صفحه
                           fontWeight: FontWeight.w500,
                         ),
                       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wisqu/screens/home_screen.dart';
 
 class CreatePasswordScreen extends StatefulWidget {
   const CreatePasswordScreen({super.key});
