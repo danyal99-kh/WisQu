@@ -11,14 +11,25 @@ class ChatMessage {
 class ChatProvider extends ChangeNotifier {
   final TextEditingController textController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-
   final List<ChatMessage> _messages = [];
   List<ChatMessage> get messages => _messages;
 
   bool _isResponding = false;
+  void scrollToBottom() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    } else {
+      // اگر هنوز آماده نیست، کمی صبر کن و دوباره امتحان کن
+      Future.delayed(const Duration(milliseconds: 100), scrollToBottom);
+    }
+  }
 
   // ارسال پیام
-  void sendMessage() {
+  void sendMessage({VoidCallback? onNewBotMessage}) {
     final text = textController.text.trim();
     if (text.isEmpty || _isResponding) return;
 
@@ -36,14 +47,14 @@ class ChatProvider extends ChangeNotifier {
       _isResponding = false;
       notifyListeners();
       _scrollToBottom();
+      onNewBotMessage?.call(); // فراخوانی callback برای انیمیشن
     });
   }
 
-  // شبیه‌سازی پاسخ چت‌بات (می‌تونی بعداً به API وصلش کنی)
   String _generateResponse(String userText) {
     final lower = userText.toLowerCase();
     if (lower.contains('سلام')) {
-      return 'سلام دانی 👋 خوش اومدی!';
+      return 'سلام  جناب 👋 خوش اومدی!';
     } else if (lower.contains('حالت چطوره')) {
       return 'من عالی‌ام 😄 تو چطوری؟';
     } else if (lower.contains('کمک')) {
@@ -58,7 +69,7 @@ class ChatProvider extends ChangeNotifier {
     if (scrollController.hasClients) {
       Future.delayed(const Duration(milliseconds: 300), () {
         scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
+          scrollController.position.maxScrollExtent + 80,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );

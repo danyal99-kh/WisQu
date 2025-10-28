@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   provider: ^6.1.5+1
   frosted_glass_effect: ^0.0.2
+  glassmorphism: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +59,7 @@ flutter:
   assets:
     - assets/logo.png
     - assets/google-logo.png
-
+    - assets/icons/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -17,20 +17,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Chat Bot',
-        theme: ThemeData(
-          brightness: Brightness.light,
-          primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Color.fromARGB(255, 246, 247, 251),
-            titleTextStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            iconTheme: IconThemeData(color: Colors.white),
-          ),
-        ),
+
         home: const SplashScreen(),
       ),
     );

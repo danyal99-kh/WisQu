@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:wisqu/screens/ForgotPasswordScreen.dart';
-import 'package:wisqu/screens/home_screen.dart';
 
 class PasswordScreen extends StatelessWidget {
   const PasswordScreen({super.key});
