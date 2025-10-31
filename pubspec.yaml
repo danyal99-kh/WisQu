@@ -33,9 +33,10 @@ flutter:
     - family: OpenSans
       fonts:
         
-        - asset: assets/fonts/opensans/OpenSans-ExtraBold.ttf
-          weight: 800
-        
+        - asset: assets/fonts/opensans/OpenSans-bold.ttf
+          weight: 600
+        - asset: assets/fonts/opensans/OpenSans-light.ttf
+          weight: 300
 
     - family: Estedad
       fonts:

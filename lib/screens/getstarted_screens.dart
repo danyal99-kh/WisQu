@@ -105,10 +105,11 @@ void showLoginDialog(BuildContext context) {
                               ),
                               label: const Text("Continue with Google"),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(
+                                elevation: 0,
+                                backgroundColor: const Color.fromRGBO(
+                                  224,
                                   229,
-                                  233,
-                                  245,
+                                  237,
                                   1,
                                 ),
                                 foregroundColor: Colors.black,
