@@ -152,23 +152,31 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           obscureText: !_isPasswordVisible,
                           textAlign: TextAlign.start,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.lock_outline,
-                              color: Color.fromRGBO(93, 63, 211, 1),
+                            prefixIcon: Image.asset(
+                              'assets/icons/lock.png',
+                              width: 22,
+                              height: 22,
                             ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: const Color.fromRGBO(93, 63, 211, 1),
-                              ),
-                              onPressed: () {
+                            suffixIcon: GestureDetector(
+                              onTap: () {
                                 setState(() {
                                   _isPasswordVisible = !_isPasswordVisible;
                                 });
                               },
+                              child: Padding(
+                                padding: const EdgeInsets.all(
+                                  12.0,
+                                ), // برای تنظیم فاصله
+                                child: Image.asset(
+                                  _isPasswordVisible
+                                      ? 'assets/icons/eye.png'
+                                      : 'assets/icons/eyeclosed.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              ),
                             ),
+
                             border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(30),
@@ -294,24 +302,30 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           obscureText: !_isConfirmPasswordVisible,
                           textAlign: TextAlign.start,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.lock_outline,
-                              color: Color.fromRGBO(93, 63, 211, 1),
+                            prefixIcon: Image.asset(
+                              'assets/icons/lock.png',
+                              width: 22,
+                              height: 22,
                             ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isConfirmPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: const Color.fromRGBO(93, 63, 211, 1),
-                              ),
-                              onPressed: () {
+                            suffixIcon: GestureDetector(
+                              onTap: () {
                                 setState(() {
                                   _isConfirmPasswordVisible =
                                       !_isConfirmPasswordVisible;
                                 });
                               },
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Image.asset(
+                                  _isConfirmPasswordVisible
+                                      ? 'assets/icons/eye.png'
+                                      : 'assets/icons/eyeclosed.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              ),
                             ),
+
                             border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(30),

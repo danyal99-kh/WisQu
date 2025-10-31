@@ -15,17 +15,35 @@ class ChatProvider extends ChangeNotifier {
   List<ChatMessage> get messages => _messages;
 
   bool _isResponding = false;
+
+  // فقط یک تابع اسکرول: نرم، هوشمند و بدون تکون
   void scrollToBottom() {
-    if (scrollController.hasClients) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    } else {
-      // اگر هنوز آماده نیست، کمی صبر کن و دوباره امتحان کن
-      Future.delayed(const Duration(milliseconds: 100), scrollToBottom);
-    }
+    // صبر تا بعد از رندر فریم (بهترین روش)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!scrollController.hasClients) return;
+
+      final maxExtent = scrollController.position.maxScrollExtent;
+      final current = scrollController.offset;
+      final distance = maxExtent - current;
+
+      // فقط اگر فاصله بیشتر از 100 پیکسل باشه، اسکرول کن
+      if (distance > 100) {
+        scrollController.animateTo(
+          maxExtent,
+          duration: Duration(
+            milliseconds: (distance * 0.8).clamp(200, 400).toInt(),
+          ),
+          curve: Curves.easeOutCubic,
+        );
+      } else if (distance > 0) {
+        // اسکرول خیلی کوتاه → خیلی نرم
+        scrollController.animateTo(
+          maxExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   // ارسال پیام
@@ -38,42 +56,34 @@ class ChatProvider extends ChangeNotifier {
     textController.clear();
     notifyListeners();
 
-    _scrollToBottom();
+    // اسکرول نرم بعد از اضافه شدن پیام کاربر
+    scrollToBottom();
 
-    // شروع پاسخ چت‌بات با تأخیر طبیعی
+    // شبیه‌سازی پاسخ بات
     _isResponding = true;
     Future.delayed(const Duration(milliseconds: 700), () {
       _messages.add(ChatMessage(text: _generateResponse(text), isUser: false));
       _isResponding = false;
       notifyListeners();
-      _scrollToBottom();
-      onNewBotMessage?.call(); // فراخوانی callback برای انیمیشن
+
+      // اسکرول نرم بعد از پاسخ بات
+      scrollToBottom();
+
+      // انیمیشن پیام جدید
+      onNewBotMessage?.call();
     });
   }
 
   String _generateResponse(String userText) {
     final lower = userText.toLowerCase();
     if (lower.contains('سلام')) {
-      return 'سلام  جناب 👋 خوش اومدی!';
+      return 'سلام جناب خوش اومدی!';
     } else if (lower.contains('حالت چطوره')) {
-      return 'من عالی‌ام 😄 تو چطوری؟';
+      return 'من عالی‌ام تو چطوری؟';
     } else if (lower.contains('کمک')) {
-      return 'حتماً! بگو در چه زمینه‌ای کمک می‌خوای؟ 🤔';
+      return 'حتماً! بگو در چه زمینه‌ای کمک می‌خوای؟';
     } else {
-      return '   سلاممم من ویس‌کو هستم, دستیار هوشمند, چطور می‌تونم کمکت کنم؟ ';
-    }
-  }
-
-  // اسکرول خودکار به پایین
-  void _scrollToBottom() {
-    if (scrollController.hasClients) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent + 80,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
+      return 'سلاممم من ویس‌کو هستم, دستیار هوشمند, چطور می‌تونم کمکت کنم؟';
     }
   }
 

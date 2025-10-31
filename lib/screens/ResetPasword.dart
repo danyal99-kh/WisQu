@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:wisqu/screens/confrimPasswordScreen.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class ResetPasword extends StatefulWidget {
+  const ResetPasword({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<ResetPasword> createState() => _ResetPaswordState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ResetPaswordState extends State<ResetPasword> {
   final List<TextEditingController> _controllers = List.generate(
     6,
     (_) => TextEditingController(),
@@ -55,55 +55,73 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildCodeInput(int index, double screenWidth) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-      transform: Matrix4.identity()..scale(_focusedIndex == index ? 1.1 : 1.0),
-      width: screenWidth * 0.12, // 12% عرض صفحه برای هر باکس
-      height: screenWidth * 0.12, // ارتفاع برابر با عرض برای شکل مربعی
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(240, 245, 250, 1),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(210, 104, 103, 103).withOpacity(0.3),
-              blurRadius: 5,
-              offset: Offset(0, 3),
+    final bool isFocused = _focusedIndex == index;
+    final double boxSize = screenWidth * 0.14; // اندازه پایه
+
+    return SizedBox(
+      width: boxSize,
+      height: boxSize,
+      child: Transform.scale(
+        scale: isFocused ? 1.1 : 1.0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(240, 245, 250, 1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isFocused
+                  ? const Color.fromRGBO(93, 63, 211, 1) // رنگ وقتی فوکوس هست
+                  : const Color.fromARGB(
+                      192,
+                      201,
+                      201,
+                      201,
+                    ), // رنگ خاکستری ملایم
+              width: isFocused ? 2.0 : 1.0, // ضخامت متفاوت در فوکوس و غیر فوکوس
             ),
-          ],
-        ),
-        child: TextField(
-          controller: _controllers[index],
-          focusNode: _focusNodes[index],
-          maxLength: 1,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
-          style: TextStyle(
-            fontSize: screenWidth * 0.05, // اندازه فونت نسبی
-            fontWeight: FontWeight.bold,
-          ),
-          decoration: InputDecoration(
-            counterText: '',
-            contentPadding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: _focusedIndex == index ? Colors.deepPurple : Colors.grey,
+
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(
+                  210,
+                  104,
+                  103,
+                  103,
+                ).withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 3),
               ),
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ],
+          ),
+          child: Center(
+            child: SizedBox(
+              width: boxSize * 0.6,
+              height: boxSize * 0.6,
+              child: TextField(
+                controller: _controllers[index],
+                focusNode: _focusNodes[index],
+                maxLength: 1,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                style: TextStyle(
+                  fontSize: boxSize * 0.35, // 35% اندازه باکس
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                decoration: const InputDecoration(
+                  counterText: '',
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                onChanged: (value) {
+                  if (value.length == 1 && index < 5) {
+                    FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+                  } else if (value.isEmpty && index > 0) {
+                    FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+                  }
+                },
+              ),
             ),
           ),
-          onChanged: (value) {
-            if (value.length == 1 && index < 5) {
-              FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-            } else if (value.isEmpty && index > 0) {
-              FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
-            }
-          },
         ),
       ),
     );
@@ -111,12 +129,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // دریافت اطلاعات MediaQuery
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
     final _ = mediaQuery.orientation == Orientation.landscape;
-    final keyboardHeight = mediaQuery.viewInsets.bottom; // ارتفاع کیبورد
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
 
     return Scaffold(
       backgroundColor: Colors.white,

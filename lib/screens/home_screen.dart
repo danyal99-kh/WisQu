@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -47,104 +45,132 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     bool isTyping = false;
 
     return Scaffold(
-      backgroundColor: Color(0xFFF6F7FA),
-
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 🔹 AppBar سفارشی
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 237, 242, 248),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(255, 2, 2, 2).withOpacity(0.4),
-                    blurRadius: 6,
-                    offset: const Offset(1, 4),
-                  ),
-                ],
+      extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xFFF6F7FA),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70), // ارتفاع سفارشی
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ), // گوشه‌های پایین گرد
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(
+                  context,
+                ).padding.top, // فاصله دقیق از Status Bar
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // 🔸 لوگو و نام برنامه فقط وقتی خوشامدگویی محو شد
-                  ValueListenableBuilder<bool>(
-                    valueListenable: showWelcomeText,
-                    builder: (context, isVisible, child) {
-                      if (isVisible) {
-                        return const SizedBox(); // وقتی خوشامدگویی هست، خالی باشه
-                      }
-                      return Row(
-                        children: [
-                          Hero(
-                            tag: 'appLogo',
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset('assets/logo.png', height: 34),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "WisQu",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 72, 72, 72),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+              color: Colors.white.withOpacity(0.15),
+              child: AppBar(
+                surfaceTintColor: Colors.transparent, // ← حذف رنگ اضافه
+                shadowColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                automaticallyImplyLeading: false,
+                flexibleSpace: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-
-                  // 🔸 آیکون تنظیمات و دکمه Get Started همیشه نمایش داده شود
-                  Row(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: Image.asset(
-                          "assets/icons/settings.png",
-                          width: 20,
-                          height: 20,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SettingsScreen(),
-                            ),
+                      //  لوگو و نام — فقط وقتی خوشامدگویی نیست
+                      ValueListenableBuilder<bool>(
+                        valueListenable: showWelcomeText,
+                        builder: (context, isVisible, child) {
+                          if (isVisible) return const SizedBox();
+                          return Row(
+                            children: [
+                              Hero(
+                                tag: 'appLogo',
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/logo.png',
+                                    height: 34,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                "WisQu",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 72, 72, 72),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),
 
-                      ElevatedButton(
-                        onPressed: () {
-                          showLoginDialog(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            119,
-                            72,
-                            200,
+                      // 🔸 دکمه‌های سمت راست
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Image.asset(
+                              "assets/icons/settings.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SettingsScreen(),
+                                ),
+                              );
+                            },
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                          // جایگزین کنید با این کد
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: 80,
+                              maxWidth: 130, // حداکثر عرض
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () => showLoginDialog(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF5D3FD3),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                minimumSize: const Size(0, 35),
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  "Get Started",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          "Get Started",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-
+          ),
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            const SizedBox(height: 90),
             Expanded(
               child: Stack(
                 alignment: Alignment.center,
@@ -177,6 +203,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       final bool isSelected =
                           _selectedMessageIndex.value == index;
 
+                      final bool showActionsByDefault =
+                          !message.isUser &&
+                          index == chatProvider.messages.length - 1;
                       Widget messageWidget = GestureDetector(
                         onTap: () {
                           setState(() {
@@ -217,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     topRight: const Radius.circular(16),
                                     bottomLeft: const Radius.circular(16),
                                     bottomRight: message.isUser
-                                        ? const Radius.circular(4)
+                                        ? const Radius.circular(9)
                                         : const Radius.circular(16),
                                   ),
                                   border: message.isUser
@@ -238,7 +267,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ),
 
-                              // --- فقط AnimatedSwitcher (حذف ValueListenableBuilder) ---
                               AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 250),
                                 transitionBuilder: (child, animation) {
@@ -259,13 +287,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                   );
                                 },
-                                child: _selectedMessageIndex.value == index
+                                child:
+                                    _selectedMessageIndex.value == index ||
+                                        showActionsByDefault
                                     ? Padding(
                                         key: ValueKey('actions_$index'),
                                         padding: const EdgeInsets.only(
-                                          left: 8.0,
-                                          top: 4,
-                                          bottom: 8,
+                                          left: 8,
+                                          top: 1,
+                                          bottom: 1,
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -304,17 +334,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                   height: 16,
                                                 ),
                                                 tooltip: 'Edit',
-                                                onPressed: () {
-                                                  chatProvider
-                                                          .textController
-                                                          .text =
-                                                      message.text;
-                                                  _selectedMessageIndex.value =
-                                                      null;
-                                                  chatProvider.scrollToBottom();
-                                                },
+                                                onPressed: () {},
                                               ),
-
                                             if (!message.isUser) ...[
                                               _buildIconButton(
                                                 icon: Image.asset(
@@ -379,158 +400,202 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     },
                   ),
 
-                  // 🔹 متن خوشامدگویی روی لیست (با انیمیشن محو)
-
-                  // تکست فیلد
-                  Align(
-                    alignment: Alignment.bottomCenter,
+                  // متن خوشامدگویی (روی لیست)
+                  ValueListenableBuilder<bool>(
+                    valueListenable: showWelcomeText,
+                    builder: (context, isVisible, child) {
+                      return AnimatedOpacity(
+                        duration: const Duration(milliseconds: 700),
+                        opacity: isVisible ? 1.0 : 0.0,
+                        curve: Curves.easeInOutCubic,
+                        child: IgnorePointer(
+                          ignoring: !isVisible,
+                          child: child,
+                        ),
+                      );
+                    },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // کادر تکست فیلد با بلور داخلی
-                        Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.03,
-                            vertical: screenHeight * 0.01,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.18),
-                                offset: const Offset(0, 5),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                          // ClipRRect برای برش گوشه‌ها قبل از بلور
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 2,
-                                sigmaY: 3,
-                              ), // بلور قوی‌تر
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(
-                                        255,
-                                        251,
-                                        255,
-                                        255,
-                                      ).withOpacity(
-                                        0.7,
-                                      ), // شفافیت کمتر برای Glassmorphism
-                                  borderRadius: BorderRadius.circular(25),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.8),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        onChanged: (value) {
-                                          setState(() {
-                                            isTyping = value.trim().isNotEmpty;
-                                          });
-                                        },
-                                        controller: chatProvider.textController,
-                                        minLines: 1,
-                                        maxLines: 4,
-                                        style: const TextStyle(
-                                          color: Colors.black87,
-                                        ),
-                                        decoration: InputDecoration(
-                                          filled: false,
-                                          border: InputBorder.none,
-                                          hintText: "What do you want to know?",
-                                          hintStyle: TextStyle(
-                                            color: isTyping
-                                                ? Colors.black87
-                                                : Colors.grey[600],
-                                          ),
-                                          contentPadding: EdgeInsets.zero,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTapDown: (_) => setState(() {}),
-                                      onTapUp: (_) => setState(() {}),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        width: 36,
-                                        height: 36,
-                                        child: IconButton(
-                                          icon: Image.asset(
-                                            width: 20,
-                                            height: 20,
-                                            "assets/icons/Send.png",
-                                          ),
-                                          color: const Color.fromARGB(
-                                            255,
-                                            119,
-                                            72,
-                                            200,
-                                          ),
-                                          onPressed: () {
-                                            _selectedMessageIndex.value =
-                                                null; // پاک کردن انتخاب قبلی
-                                            chatProvider.sendMessage(
-                                              onNewBotMessage: () {
-                                                _messageAnimController.reset();
-                                                _messageAnimController
-                                                    .forward();
-                                              },
-                                            );
-                                            if (showWelcomeText.value) {
-                                              Future.delayed(
-                                                const Duration(
-                                                  milliseconds: 100,
-                                                ),
-                                                () {
-                                                  showWelcomeText.value = false;
-                                                },
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                        Hero(
+                          tag: "appLogo",
+                          child: Image.asset(
+                            'assets/logo.png',
+                            width: screenWidth * 0.3,
+                            height: screenHeight * 0.13,
+                            fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        if (!keyboardOpen)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.03,
-                            ),
-                            child: Text(
-                              "Trained on religious ruling questions. By messaging, you agree to our Terms and Privacy Policy.",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: screenWidth * 0.030,
-                                fontWeight: FontWeight.w500,
-                              ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.1,
+                            vertical: screenHeight * 0.02,
+                          ),
+                          child: Text(
+                            'WisQu\nHello, What can I help \nyou with?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 72, 72, 72),
+                              fontSize: screenWidth * 0.05,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
+                        ),
                       ],
                     ),
                   ),
+                ],
+              ),
+            ),
+            // تکست فیلد
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // کادر تکست فیلد با بلور داخلی
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.03,
+                      vertical: screenHeight * 0.01,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.18),
+                          offset: const Offset(0, 5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    // ClipRRect برای برش گوشه‌ها قبل از بلور
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: 2,
+                          sigmaY: 3,
+                        ), // بلور قوی‌تر
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 251, 255, 255)
+                                .withOpacity(
+                                  0.7,
+                                ), // شفافیت کمتر برای Glassmorphism
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.8),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isTyping = value.trim().isNotEmpty;
+                                    });
+                                  },
+                                  controller: chatProvider.textController,
+                                  minLines: 1,
+                                  maxLines: 4,
+                                  style: const TextStyle(color: Colors.black87),
+                                  decoration: InputDecoration(
+                                    filled: false,
+                                    border: InputBorder.none,
+                                    hintText: "What do you want to know?",
+                                    hintStyle: TextStyle(
+                                      color: isTyping
+                                          ? Colors.black87
+                                          : Colors.grey[600],
+                                    ),
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTapDown: (_) => setState(() {}),
+                                onTapUp: (_) => setState(() {}),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      // این خط جدیده!
+                                      color: const Color.fromARGB(
+                                        255,
+                                        206,
+                                        206,
+                                        206,
+                                      ), // رنگ حاشیه
+                                      width: 1.0, // ضخامت حاشیه
+                                    ),
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  width: 36,
+                                  height: 36,
+
+                                  child: IconButton(
+                                    icon: Image.asset(
+                                      width: 20,
+                                      height: 20,
+                                      "assets/icons/Send.png",
+                                    ),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      119,
+                                      72,
+                                      200,
+                                    ),
+                                    onPressed: () {
+                                      _selectedMessageIndex.value =
+                                          null; // پاک کردن انتخاب قبلی
+                                      chatProvider.sendMessage(
+                                        onNewBotMessage: () {
+                                          _messageAnimController.reset();
+                                          _messageAnimController.forward();
+                                        },
+                                      );
+                                      if (showWelcomeText.value) {
+                                        Future.delayed(
+                                          const Duration(milliseconds: 100),
+                                          () {
+                                            showWelcomeText.value = false;
+                                          },
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (!keyboardOpen)
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.03,
+                      ),
+                      child: Text(
+                        "Trained on religious ruling questions. By messaging, you agree to our Terms and Privacy Policy.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: screenWidth * 0.030,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -540,9 +605,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // 🔹 متد کمکی برای Scale animation روی آیکون‌ها
   Widget _buildIconButton({
-    required Widget icon, // Image.asset یا هر Widget دیگه
+    required Widget icon,
     required String tooltip,
     required VoidCallback onPressed,
   }) {
@@ -552,11 +616,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onTapDown: (_) => setState(() {}),
         onTapUp: (_) => setState(() {}),
         child: IconButton(
-          icon: icon, // مستقیم icon رو بده (بدون Icon())
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          onPressed: onPressed,
-          iconSize: 20, // اندازه آیکون
+          icon: ColorFiltered(
+            colorFilter: const ColorFilter.mode(
+              Color.fromARGB(255, 121, 121, 121), // همه آیکون‌ها این رنگ
+              BlendMode.srcIn,
+            ),
+            child: icon,
+          ),
+          onPressed: () {},
         ),
       ),
     );

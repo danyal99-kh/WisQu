@@ -15,6 +15,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => ChatProvider())],
       child: MaterialApp(
+        theme: ThemeData(
+          fontFamily: 'opensans',
+
+          fontFamilyFallback: const ['Estedad'],
+
+          useMaterial3: true,
+        ),
         debugShowCheckedModeBanner: false,
         title: 'Chat Bot',
 

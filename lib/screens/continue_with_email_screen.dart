@@ -9,10 +9,7 @@ class ContinueWithEmailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginPage(),
-    );
+    return const LoginPage();
   }
 }
 
@@ -22,6 +19,9 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
+
+bool _showError = false; // فقط وقتی دکمه زده شد و خطا بود
+String? _errorMessage;
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
@@ -41,10 +41,7 @@ class _LoginPageState extends State<LoginPage>
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
         title: const Text('auth.wisq.ai'),
@@ -95,6 +92,7 @@ class _LoginPageState extends State<LoginPage>
               const SizedBox(height: 25),
 
               // 🔹 فیلد ایمیل
+              // 🔹 فیلد ایمیل (اصلاح شده)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -102,54 +100,101 @@ class _LoginPageState extends State<LoginPage>
                   children: [
                     const Text("Email", style: TextStyle(fontSize: 16)),
                     const SizedBox(height: 6),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color.fromRGBO(240, 244, 250, 1),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
+
+                    // فیلد با ارتفاع ثابت
+                    SizedBox(
+                      height: 56,
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromRGBO(240, 244, 250, 1),
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: TextFormField(
+                              controller: _emailController,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(
+                                  Icons.email_outlined,
+                                  color: Color.fromRGBO(93, 63, 211, 1),
+                                  size: 20,
+                                ),
+                                border: InputBorder.none,
+                                hintText: "example@email.com",
+                                hintStyle: const TextStyle(
+                                  color: Color.fromRGBO(99, 99, 99, 0.984),
+                                  fontSize: 16,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 4,
+                                ),
+                                // خطا رو کاملاً مخفی می‌کنیم
+                                errorStyle: const TextStyle(
+                                  height: 0,
+                                  fontSize: 0,
+                                ),
+                                errorBorder: InputBorder.none,
+                                focusedErrorBorder: InputBorder.none,
+                              ),
+                              style: const TextStyle(fontSize: 16),
+                              onChanged: (_) {
+                                // وقتی کاربر تایپ کرد، خطا پاک بشه
+                                if (_showError) {
+                                  setState(() {
+                                    _showError = false;
+                                    _errorMessage = null;
+                                  });
+                                }
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'required';
+                                }
+                                if (!RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                ).hasMatch(value)) {
+                                  return 'invalid';
+                                }
+                                return null;
+                              },
+                            ),
                           ),
                         ],
                       ),
-                      child: TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.email_outlined,
-                            color: Color.fromRGBO(93, 63, 211, 1),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Color.fromRGBO(240, 244, 250, 1),
-                          hintText: "example@email.com",
-                          errorStyle: TextStyle(
-                            color: Color.fromARGB(
-                              255,
-                              230,
-                              81,
-                              70,
-                            ), // رنگ متن خطا
-                            fontSize: 14, // اندازه متن
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          return null;
-                        },
-                      ),
+                    ),
+
+                    // پیام خطا: فقط بعد از زدن دکمه
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: _showError ? 20 : 0,
+                      padding: _showError
+                          ? const EdgeInsets.only(left: 16, top: 4)
+                          : EdgeInsets.zero,
+                      child: _showError
+                          ? Text(
+                              _errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                              key: ValueKey(_errorMessage),
+                            )
+                          : null,
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 35),
 
               // 🔹 دکمه Continue
@@ -157,14 +202,30 @@ class _LoginPageState extends State<LoginPage>
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PasswordScreen(),
-                        ),
-                      );
+                    final email = _emailController.text.trim();
+
+                    // ریست خطا
+                    setState(() {
+                      _showError = false;
+                      _errorMessage = null;
+                    });
+
+                    // بررسی دستی (چون validator فقط برای فرم هست)
+                    if (email.isEmpty) {
+                      setState(() {
+                        _showError = true;
+                        _errorMessage = 'Please enter your email';
+                      });
+                      return;
                     }
+
+                    // اگر همه چیز درست بود
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PasswordScreen(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
@@ -200,6 +261,12 @@ class _LoginPageState extends State<LoginPage>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
+                    side: const BorderSide(
+                      // حاشیه!
+                      color: Color.fromRGBO(160, 160, 160, 0.385),
+                      width: 1,
+                    ),
+                    elevation: 0,
                   ),
                   child: const Text(
                     'Go back',

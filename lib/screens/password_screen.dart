@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:wisqu/screens/ForgotPasswordScreen.dart';
+import 'package:wisqu/screens/ResetPasword.dart';
 
 class PasswordScreen extends StatelessWidget {
   const PasswordScreen({super.key});
@@ -119,8 +119,7 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPasswordScreen(),
+                                  builder: (context) => const ResetPasword(),
                                 ),
                               );
                             },
