@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:wisqu/screens/ResetPasword.dart';
 
@@ -8,7 +6,7 @@ class PasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoginPage();
+    return const LoginPage();
   }
 }
 
@@ -21,13 +19,33 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
+  late final TextEditingController _passwordController;
+  late final TextEditingController _confirmPasswordController;
+  String? _confirmPasswordError;
+  bool _isConfirmPasswordVisible = false;
+  @override
+  void initState() {
+    super.initState();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-
+    final double horizontalPadding = size.width * 0.06;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double titleFontSize = screenWidth * 0.07;
     return Scaffold(
-      resizeToAvoidBottomInset: false, // جلوگیری از اسکرول خودکار
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -56,9 +74,14 @@ class _LoginPageState extends State<LoginPage>
             const SizedBox(height: 15),
 
             // 🔹 متن توضیحی با کوچک شدن تطبیقی
-            const Text(
+            Text(
               'Welcome back, X!',
-              style: TextStyle(color: Colors.black, fontSize: 30),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: titleFontSize,
+                fontFamily: 'OpenSans',
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
             ),
 
@@ -66,15 +89,22 @@ class _LoginPageState extends State<LoginPage>
 
             // 🔹 فیلد ایمیل
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Pasword", style: TextStyle(fontSize: 16)),
+                  const Text(
+                    " Password",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'OpenSans',
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color.fromRGBO(240, 244, 250, 1),
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
@@ -84,23 +114,50 @@ class _LoginPageState extends State<LoginPage>
                         ),
                       ],
                     ),
-                    child: const TextField(
+                    child: TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: !_isConfirmPasswordVisible,
+                      textAlign: TextAlign.start,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.lock_outline_rounded,
-                          color: Color.fromRGBO(93, 63, 211, 1),
+                        prefixIcon: Image.asset(
+                          'assets/icons/lock.png',
+                          width: 22,
+                          height: 22,
                         ),
-                        border: OutlineInputBorder(
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Image.asset(
+                              _isConfirmPasswordVisible
+                                  ? 'assets/icons/eye.png'
+                                  : 'assets/icons/eyeclosed.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
+                        ),
+
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Color.fromRGBO(240, 244, 250, 1),
-                        hintText: "Enter pasword",
+                        fillColor: const Color.fromRGBO(240, 244, 250, 1),
+                        hintText: "Enter password",
+                        errorText: _confirmPasswordError,
+                        errorStyle: const TextStyle(
+                          color: Color.fromARGB(255, 230, 81, 70),
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 10),
 
                   RichText(
@@ -143,7 +200,7 @@ class _LoginPageState extends State<LoginPage>
             SizedBox(height: 25),
             // 🔹 دکمه Continue
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
@@ -155,7 +212,11 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 child: const Text(
                   'Login',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'OpenSans',
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

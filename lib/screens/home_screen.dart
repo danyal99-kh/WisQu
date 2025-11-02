@@ -42,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    bool isTyping = false;
+
+    // bool isTyping = false;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -155,8 +156,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                     child: Text(
                                       message.text,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: Colors.black87,
+                                        fontFamily: "opensans",
+                                        fontWeight: FontWeight.w400,
                                       ),
                                     ),
                                   ),
@@ -519,27 +522,47 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: Row(
                           children: [
                             Expanded(
-                              child: TextField(
-                                onChanged: (value) {
-                                  setState(() {
-                                    isTyping = value.trim().isNotEmpty;
-                                  });
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: isTyping,
+                                builder: (context, typing, child) {
+                                  final double fontSize = screenWidth * 0.040;
+                                  final double hintFontSize =
+                                      screenWidth * 0.038;
+                                  return TextField(
+                                    onChanged: (value) {
+                                      isTyping.value = value.trim().isNotEmpty;
+                                    },
+                                    controller: chatProvider.textController,
+                                    minLines: 1,
+                                    maxLines: 4,
+                                    style: TextStyle(
+                                      fontSize: fontSize,
+                                      color: typing
+                                          ? const Color.fromARGB(255, 0, 0, 0)
+                                          : const Color.fromARGB(
+                                              255,
+                                              141,
+                                              141,
+                                              141,
+                                            ),
+                                    ),
+                                    decoration: InputDecoration(
+                                      filled: false,
+                                      border: InputBorder.none,
+                                      hintText: "What do you want to know?",
+                                      hintStyle: TextStyle(
+                                        fontSize: hintFontSize,
+                                        color: const Color.fromARGB(
+                                          255,
+                                          141,
+                                          141,
+                                          141,
+                                        ),
+                                      ),
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                  );
                                 },
-                                controller: chatProvider.textController,
-                                minLines: 1,
-                                maxLines: 4,
-                                style: const TextStyle(color: Colors.black87),
-                                decoration: InputDecoration(
-                                  filled: false,
-                                  border: InputBorder.none,
-                                  hintText: "What do you want to know?",
-                                  hintStyle: TextStyle(
-                                    color: isTyping
-                                        ? Colors.black87
-                                        : Colors.grey[600],
-                                  ),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
                               ),
                             ),
                             GestureDetector(

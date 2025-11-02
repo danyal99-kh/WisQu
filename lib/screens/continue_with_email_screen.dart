@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-
+    final double horizontalPadding = size.width * 0.06;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -92,9 +92,8 @@ class _LoginPageState extends State<LoginPage>
               const SizedBox(height: 25),
 
               // 🔹 فیلد ایمیل
-              // 🔹 فیلد ایمیل (اصلاح شده)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -132,7 +131,7 @@ class _LoginPageState extends State<LoginPage>
                                 border: InputBorder.none,
                                 hintText: "example@email.com",
                                 hintStyle: const TextStyle(
-                                  color: Color.fromRGBO(99, 99, 99, 0.984),
+                                  color: Color.fromRGBO(170, 170, 170, 0.984),
                                   fontSize: 16,
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
@@ -199,7 +198,7 @@ class _LoginPageState extends State<LoginPage>
 
               // 🔹 دکمه Continue
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: ElevatedButton(
                   onPressed: () {
                     final email = _emailController.text.trim();
@@ -245,7 +244,7 @@ class _LoginPageState extends State<LoginPage>
 
               // 🔹 دکمه Go Back
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(

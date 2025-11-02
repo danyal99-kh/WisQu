@@ -134,7 +134,7 @@ class _ResetPaswordState extends State<ResetPasword> {
     final screenHeight = mediaQuery.size.height;
     final _ = mediaQuery.orientation == Orientation.landscape;
     final keyboardHeight = mediaQuery.viewInsets.bottom;
-
+    final double horizontalPadding = screenWidth * 0.9;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -165,13 +165,14 @@ class _ResetPaswordState extends State<ResetPasword> {
                 'Enter Your Verification Code',
                 style: TextStyle(
                   fontSize: screenWidth * 0.05, // اندازه فونت نسبی
-                  fontWeight: FontWeight.w900,
+                  fontFamily: 'OpenSans',
+                  fontWeight: FontWeight.w600,
                 ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: screenHeight * 0.02), // 2% ارتفاع صفحه
               RichText(
-                textAlign: TextAlign.left,
+                textAlign: TextAlign.center,
                 text: TextSpan(
                   style: TextStyle(
                     fontSize: screenWidth * 0.037,
@@ -203,14 +204,6 @@ class _ResetPaswordState extends State<ResetPasword> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.025),
-              Text(
-                "Didn't receive the email? Check your spam folder or",
-                style: TextStyle(
-                  fontSize: screenWidth * 0.037,
-                  color: Colors.black54,
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.005),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -219,6 +212,11 @@ class _ResetPaswordState extends State<ResetPasword> {
                     color: Colors.black87,
                   ),
                   children: [
+                    const TextSpan(
+                      text:
+                          "Didn't receive the email? Check your spam folder or ",
+                      style: TextStyle(color: Colors.black54),
+                    ),
                     TextSpan(
                       text: 'Resend code',
                       style: const TextStyle(
@@ -234,8 +232,8 @@ class _ResetPaswordState extends State<ResetPasword> {
               ),
               SizedBox(height: screenHeight * 0.04),
               SizedBox(
-                width: double.infinity,
-                height: 40, // 40 پیکسل ارتفاع صفحه
+                width: horizontalPadding,
+                height: 38,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
