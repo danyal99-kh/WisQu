@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:wisqu/screens/confrimPasswordScreen.dart';
+import 'package:wisqu/widget/custom_button.dart';
 
 class ResetPasword extends StatefulWidget {
   const ResetPasword({super.key});
@@ -56,70 +57,50 @@ class _ResetPaswordState extends State<ResetPasword> {
 
   Widget _buildCodeInput(int index, double screenWidth) {
     final bool isFocused = _focusedIndex == index;
-    final double boxSize = screenWidth * 0.14; // اندازه پایه
+    final double boxSize = screenWidth * 0.14;
 
-    return SizedBox(
-      width: boxSize,
-      height: boxSize,
-      child: Transform.scale(
-        scale: isFocused ? 1.1 : 1.0,
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(240, 245, 250, 1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isFocused
-                  ? const Color.fromRGBO(93, 63, 211, 1) // رنگ وقتی فوکوس هست
-                  : const Color.fromARGB(
-                      192,
-                      201,
-                      201,
-                      201,
-                    ), // رنگ خاکستری ملایم
-              width: isFocused ? 2.0 : 1.0, // ضخامت متفاوت در فوکوس و غیر فوکوس
-            ),
-
-            boxShadow: [
-              BoxShadow(
-                color: const Color.fromARGB(
-                  210,
-                  104,
-                  103,
-                  103,
-                ).withOpacity(0.3),
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
+    return Transform.scale(
+      scale: isFocused ? 1.1 : 1.0,
+      child: Container(
+        width: boxSize,
+        height: boxSize,
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(240, 245, 250, 1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isFocused
+                ? const Color.fromRGBO(93, 63, 211, 1)
+                : const Color.fromARGB(192, 201, 201, 201),
+            width: isFocused ? 2.0 : 1.0,
           ),
-          child: Center(
-            child: SizedBox(
-              width: boxSize * 0.6,
-              height: boxSize * 0.6,
-              child: TextField(
-                controller: _controllers[index],
-                focusNode: _focusNodes[index],
-                maxLength: 1,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                style: TextStyle(
-                  fontSize: boxSize * 0.35, // 35% اندازه باکس
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                decoration: const InputDecoration(
-                  counterText: '',
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                ),
-                onChanged: (value) {
-                  if (value.length == 1 && index < 5) {
-                    FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-                  } else if (value.isEmpty && index > 0) {
-                    FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
-                  }
-                },
+        ),
+        child: Center(
+          child: SizedBox(
+            width: boxSize * 0.8,
+            height: boxSize * 0.8,
+            child: TextField(
+              controller: _controllers[index],
+              focusNode: _focusNodes[index],
+              maxLength: 1,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              style: TextStyle(
+                fontSize: boxSize * 0.35, // 35% اندازه باکس
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
+              decoration: const InputDecoration(
+                counterText: '',
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+              ),
+              onChanged: (value) {
+                if (value.length == 1 && index < 5) {
+                  FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+                } else if (value.isEmpty && index > 0) {
+                  FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+                }
+              },
             ),
           ),
         ),
@@ -234,7 +215,7 @@ class _ResetPaswordState extends State<ResetPasword> {
               SizedBox(
                 width: horizontalPadding,
                 height: 38,
-                child: ElevatedButton(
+                child: CustomButton(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -243,21 +224,8 @@ class _ResetPaswordState extends State<ResetPasword> {
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, screenHeight * 0.06),
-                    backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                    ),
-                  ),
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+
+                  text: 'Continue',
                 ),
               ),
             ],

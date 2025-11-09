@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wisqu/widget/custom_button.dart';
+import 'package:wisqu/widget/custom_textfield.dart';
 
 class CreatePasswordScreen extends StatefulWidget {
   const CreatePasswordScreen({super.key});
@@ -15,6 +17,20 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   String? _confirmPasswordError;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // این دو خط را اضافه کن
+    _passwordController.addListener(() {
+      _updateProgress(_passwordController.text);
+    });
+
+    _confirmPasswordController.addListener(() {
+      _validateConfirmPassword(_confirmPasswordController.text);
+    });
+  }
 
   void _updateProgress(String password) {
     setState(() {
@@ -128,7 +144,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOut,
             child: Padding(
-              padding: EdgeInsets.all(screenWidth * 0.04),
+              padding: EdgeInsets.all(screenWidth * 0.05),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start, // شروع از بالا
                 children: [
@@ -149,74 +165,18 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     ), // کاهش اندازه فونت
                   ),
                   SizedBox(height: screenHeight * 0.02),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Password", style: TextStyle(fontSize: 16)),
-                        const SizedBox(height: 6),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(240, 244, 250, 1),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: TextFormField(
-                            controller: _passwordController,
-                            obscureText: !_isPasswordVisible,
-                            textAlign: TextAlign.start,
-                            decoration: InputDecoration(
-                              prefixIcon: Image.asset(
-                                'assets/icons/lock.png',
-                                width: 22,
-                                height: 22,
-                              ),
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _isPasswordVisible = !_isPasswordVisible;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    12.0,
-                                  ), // برای تنظیم فاصله
-                                  child: Image.asset(
-                                    _isPasswordVisible
-                                        ? 'assets/icons/eye.png'
-                                        : 'assets/icons/eyeclosed.png',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              ),
-
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(30),
-                                ),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: const Color.fromRGBO(240, 244, 250, 1),
-                              hintText: "Enter your password",
-                              errorStyle: const TextStyle(
-                                color: Color.fromARGB(255, 230, 81, 70),
-                                fontSize: 14,
-                              ),
-                            ),
-                            onChanged: (value) => _updateProgress(value),
-                          ),
-                        ),
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Password", style: TextStyle(fontSize: 16)),
+                      const SizedBox(height: 6),
+                      CustomTextField(
+                        hintText: 'Enter your Password',
+                        iconPath: 'assets/icons/lock.png',
+                        controller: _passwordController,
+                        isPassword: true,
+                      ),
+                    ],
                   ),
                   SizedBox(height: screenHeight * 0.01),
                   Row(
@@ -307,113 +267,35 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: screenHeight * 0.01),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Confirm Password",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'OpenSans',
-                            fontWeight: FontWeight.w600,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Confirm Password",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(height: 6),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(240, 244, 250, 1),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: TextFormField(
-                            controller:
-                                _confirmPasswordController, // اصلاح کنترلر
-                            obscureText: !_isConfirmPasswordVisible,
-                            textAlign: TextAlign.start,
-                            decoration: InputDecoration(
-                              prefixIcon: Image.asset(
-                                'assets/icons/lock.png',
-                                width: 22,
-                                height: 22,
-                              ),
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _isConfirmPasswordVisible =
-                                        !_isConfirmPasswordVisible;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Image.asset(
-                                    _isConfirmPasswordVisible
-                                        ? 'assets/icons/eye.png'
-                                        : 'assets/icons/eyeclosed.png',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              ),
-
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(30),
-                                ),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: const Color.fromRGBO(240, 244, 250, 1),
-                              hintText: "Confirm password",
-                              errorText: _confirmPasswordError,
-                              errorStyle: const TextStyle(
-                                color: Color.fromARGB(255, 230, 81, 70),
-                                fontSize: 14,
-                              ),
-                            ),
-                            onChanged: (value) =>
-                                _validateConfirmPassword(value),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 6),
+                      CustomTextField(
+                        controller: _confirmPasswordController,
+                        hintText: 'Confirm Password',
+                        iconPath: 'assets/icons/lock.png',
+                        isPassword: true,
+                        errorMessage: _confirmPasswordError,
+                      ),
+                    ],
                   ),
                   SizedBox(height: screenHeight * 0.04),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: horizontalPadding,
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_confirmPasswordError == null &&
-                            _strengthLevel >= 2.0) {
-                          // اقدام برای ایجاد حساب
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                        minimumSize: Size(double.infinity, 40),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            screenWidth * 0.04,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        'Create Account',
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.045,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  CustomButton(
+                    onPressed: () {
+                      if (_confirmPasswordError == null &&
+                          _strengthLevel >= 2.0) {}
+                    },
+
+                    text: 'Create Account',
                   ),
                   SizedBox(
                     height: bottomInset > 0

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:wisqu/screens/home_screen.dart';
 import 'package:wisqu/screens/password_screen.dart';
+import 'package:wisqu/widget/custom_button.dart';
 
 class ContinueWithEmailScreen extends StatelessWidget {
   const ContinueWithEmailScreen({super.key});
@@ -99,81 +100,73 @@ class _LoginPageState extends State<LoginPage>
                   children: [
                     const Text("Email", style: TextStyle(fontSize: 16)),
                     const SizedBox(height: 6),
-
-                    // فیلد با ارتفاع ثابت
                     SizedBox(
-                      height: 56,
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color.fromRGBO(240, 244, 250, 1),
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
+                      height: 50,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(178, 237, 242, 250),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: _showError
+                                ? Colors.red
+                                : (MediaQuery.of(context).viewInsets.bottom >
+                                          0 ||
+                                      _emailController.text.isNotEmpty)
+                                ? const Color.fromRGBO(93, 63, 211, 1)
+                                : Colors.grey.withOpacity(0.3),
+                            width: _showError ? 1.5 : 1.0,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: TextFormField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(
-                                  Icons.email_outlined,
-                                  color: Color.fromRGBO(93, 63, 211, 1),
-                                  size: 20,
-                                ),
-                                border: InputBorder.none,
-                                hintText: "example@email.com",
-                                hintStyle: const TextStyle(
-                                  color: Color.fromRGBO(170, 170, 170, 0.984),
-                                  fontSize: 16,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal: 4,
-                                ),
-                                // خطا رو کاملاً مخفی می‌کنیم
-                                errorStyle: const TextStyle(
-                                  height: 0,
-                                  fontSize: 0,
-                                ),
-                                errorBorder: InputBorder.none,
-                                focusedErrorBorder: InputBorder.none,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: TextFormField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
+                                Icons.email_outlined,
+                                color: Color.fromRGBO(93, 63, 211, 1),
+                                size: 25,
                               ),
-                              style: const TextStyle(fontSize: 16),
-                              onChanged: (_) {
-                                // وقتی کاربر تایپ کرد، خطا پاک بشه
-                                if (_showError) {
-                                  setState(() {
-                                    _showError = false;
-                                    _errorMessage = null;
-                                  });
-                                }
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'required';
-                                }
-                                if (!RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                ).hasMatch(value)) {
-                                  return 'invalid';
-                                }
-                                return null;
-                              },
+                              border: InputBorder.none,
+                              hintText: "example@email.com",
+                              hintStyle: const TextStyle(
+                                color: Color.fromRGBO(170, 170, 170, 0.984),
+                                fontSize: 16,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 4,
+                              ),
+                              errorStyle: const TextStyle(
+                                height: 0,
+                                fontSize: 0,
+                              ),
+                              errorBorder: InputBorder.none,
+                              focusedErrorBorder: InputBorder.none,
                             ),
+                            style: const TextStyle(fontSize: 16),
+                            onChanged: (_) {
+                              setState(() {
+                                _showError = false;
+                                _errorMessage = null;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return 'required';
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value))
+                                return 'invalid';
+                              return null;
+                            },
                           ),
-                        ],
+                        ),
                       ),
                     ),
 
-                    // پیام خطا: فقط بعد از زدن دکمه
+                    // پیام خطا
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       height: _showError ? 20 : 0,
@@ -194,12 +187,13 @@ class _LoginPageState extends State<LoginPage>
                   ],
                 ),
               ),
+
               const SizedBox(height: 35),
 
               // 🔹 دکمه Continue
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: ElevatedButton(
+                child: CustomButton(
                   onPressed: () {
                     final email = _emailController.text.trim();
 
@@ -218,7 +212,6 @@ class _LoginPageState extends State<LoginPage>
                       return;
                     }
 
-                    // اگر همه چیز درست بود
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -226,17 +219,8 @@ class _LoginPageState extends State<LoginPage>
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                    minimumSize: const Size(double.infinity, 40),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(color: Colors.white),
-                  ),
+
+                  text: 'Continue',
                 ),
               ),
 
@@ -256,7 +240,7 @@ class _LoginPageState extends State<LoginPage>
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(246, 247, 250, 1),
-                    minimumSize: const Size(double.infinity, 40),
+                    minimumSize: const Size(double.infinity, 37),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),

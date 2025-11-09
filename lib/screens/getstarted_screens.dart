@@ -3,6 +3,7 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:wisqu/widget/custom_button.dart';
 import 'continue_with_email_screen.dart';
 
 void showLoginDialog(BuildContext context) {
@@ -141,7 +142,7 @@ void showLoginDialog(BuildContext context) {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                ElevatedButton(
+                                CustomButton(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
@@ -151,18 +152,7 @@ void showLoginDialog(BuildContext context) {
                                       ),
                                     );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepPurple,
-                                    foregroundColor: Colors.white,
-                                    minimumSize: const Size(
-                                      double.infinity,
-                                      37,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                  child: const Text("Continue with Email"),
+                                  text: 'Continue With Email',
                                 ),
                               ],
                             ),

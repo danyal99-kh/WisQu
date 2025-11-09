@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/screens/getstarted_screens.dart';
 import '../../state/chat_provider.dart';
-import 'package:wisqu/screens/setting_screens.dart';
+import 'package:wisqu/screens/settings_modal.dart';
+import 'settings_modal.dart'; // مسیر دقیق رو بده
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     MediaQuery.of(context).padding.top +
                                     18
                               : 12,
-                          left: 16,
-                          right: 16,
+                          left: 0,
+                          right: 2,
                           bottom: 90,
                         ),
                         itemCount: chatProvider.messages.length,
@@ -81,15 +82,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   chatProvider.messages.lastIndexWhere(
                                     (m) => m.isUser,
                                   );
-                          final isLastBotMessage =
-                              !message.isUser &&
-                              index ==
-                                  chatProvider.messages.lastIndexWhere(
-                                    (m) => !m.isUser,
-                                  );
-
-                          final bool isSelected =
-                              _selectedMessageIndex.value == index;
 
                           final bool showActionsByDefault =
                               !message.isUser &&
@@ -356,16 +348,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               height:
                                   kToolbarHeight +
                                   MediaQuery.of(context).padding.top +
-                                  25,
+                                  2,
                               color: Colors.white.withOpacity(0.15),
                               child: Padding(
                                 // فقط padding افقی
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
+                                padding: const EdgeInsets.only(
+                                  top: 18,
+                                  left: 13,
+                                  right: 13,
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     // لوگو و نام
                                     ValueListenableBuilder<bool>(
@@ -410,15 +405,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             width: 20,
                                             height: 20,
                                           ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const SettingsScreen(),
-                                              ),
-                                            );
-                                          },
+                                          onPressed: () =>
+                                              showSettingsPopup(context),
                                         ),
                                         ConstrainedBox(
                                           constraints: const BoxConstraints(
@@ -477,130 +465,119 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // کادر تکست فیلد با بلور داخلی
+                // === تکست فیلد اصلی ===
                 Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.03,
-                    vertical: screenHeight * 0.01,
+                  width: 380, // دقیقاً از فیگما
+                  height: 60, // حالت اولیه
+                  constraints: const BoxConstraints(
+                    maxHeight: 100, // حداکثر ارتفاع
+                  ),
+                  margin: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8, // gap بین فیلد و متن زیر
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color.fromARGB(
+                      215,
+                      237,
+                      242,
+                      250,
+                    ), // #EDF2FAB2
+                    boxShadow: const [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.18),
-                        offset: const Offset(0, 5),
-                        blurRadius: 10,
+                        color: Color(0x14000000), // #00000014
+                        offset: Offset(0, 4),
+                        blurRadius: 8,
                       ),
                     ],
                   ),
-                  // ClipRRect برای برش گوشه‌ها قبل از بلور
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(20),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 2,
-                        sigmaY: 3,
-                      ), // بلور قوی‌تر
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
+                        padding: const EdgeInsets.all(12), // دقیقاً از فیگما
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(
-                            255,
-                            251,
-                            255,
-                            255,
-                          ).withOpacity(0.7), // شفافیت کمتر برای Glassmorphism
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.8),
-                            width: 1,
-                          ),
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           children: [
+                            // === TextField ===
                             Expanded(
                               child: ValueListenableBuilder<bool>(
                                 valueListenable: isTyping,
                                 builder: (context, typing, child) {
-                                  final double fontSize = screenWidth * 0.040;
-                                  final double hintFontSize =
-                                      screenWidth * 0.038;
                                   return TextField(
+                                    controller: chatProvider.textController,
+                                    minLines: 1,
+                                    maxLines: 3, // تا 100px جا بشه
                                     onChanged: (value) {
                                       isTyping.value = value.trim().isNotEmpty;
                                     },
-                                    controller: chatProvider.textController,
-                                    minLines: 1,
-                                    maxLines: 4,
                                     style: TextStyle(
-                                      fontSize: fontSize,
+                                      fontSize: 16,
                                       color: typing
-                                          ? const Color.fromARGB(255, 0, 0, 0)
-                                          : const Color.fromARGB(
-                                              255,
-                                              141,
-                                              141,
-                                              141,
-                                            ),
+                                          ? Colors.black87
+                                          : const Color(0xFF8D8D8D),
+                                      height: 1.4,
                                     ),
                                     decoration: InputDecoration(
-                                      filled: false,
-                                      border: InputBorder.none,
+                                      isDense: true,
                                       hintText: "What do you want to know?",
-                                      hintStyle: TextStyle(
-                                        fontSize: hintFontSize,
-                                        color: const Color.fromARGB(
-                                          255,
-                                          141,
-                                          141,
-                                          141,
-                                        ),
+                                      hintStyle: const TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xFF8D8D8D),
                                       ),
+                                      border: InputBorder.none,
                                       contentPadding: EdgeInsets.zero,
                                     ),
                                   );
                                 },
                               ),
                             ),
+
+                            const SizedBox(width: 8), // gap بین فیلد و دکمه
+                            // === دکمه ارسال ===
                             GestureDetector(
                               onTapDown: (_) => setState(() {}),
                               onTapUp: (_) => setState(() {}),
                               child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    // این خط جدیده!
-                                    color: const Color.fromARGB(
-                                      255,
-                                      206,
-                                      206,
-                                      206,
-                                    ), // رنگ حاشیه
-                                    width: 1.0, // ضخامت حاشیه
-                                  ),
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
                                 width: 36,
                                 height: 36,
-
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border(
+                                    top: BorderSide(
+                                      color: Color(0xFFCECECE),
+                                      width: 1,
+                                    ),
+                                    left: BorderSide(
+                                      color: Color(0xFFCECECE),
+                                      width: 1,
+                                    ),
+                                    right: BorderSide(
+                                      color: Color(0xFFCECECE),
+                                      width: 1,
+                                    ),
+                                    bottom: BorderSide(
+                                      color: Color(0xFFCECECE),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
                                 child: IconButton(
+                                  padding: EdgeInsets.zero,
                                   icon: Image.asset(
+                                    "assets/icons/Send.png",
                                     width: 20,
                                     height: 20,
-                                    "assets/icons/Send.png",
-                                  ),
-                                  color: const Color.fromARGB(
-                                    255,
-                                    119,
-                                    72,
-                                    200,
                                   ),
                                   onPressed: () {
-                                    _selectedMessageIndex.value =
-                                        null; // پاک کردن انتخاب قبلی
+                                    _selectedMessageIndex.value = null;
                                     chatProvider.sendMessage(
                                       onNewBotMessage: () {
                                         _messageAnimController.reset();
@@ -610,9 +587,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     if (showWelcomeText.value) {
                                       Future.delayed(
                                         const Duration(milliseconds: 100),
-                                        () {
-                                          showWelcomeText.value = false;
-                                        },
+                                        () => showWelcomeText.value = false,
                                       );
                                     }
                                   },
@@ -625,12 +600,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+
+                // === متن زیر فیلد ===
                 if (!keyboardOpen)
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.03,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       "Trained on religious ruling questions. By messaging, you agree to our Terms and Privacy Policy.",
                       textAlign: TextAlign.center,
@@ -638,10 +612,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         fontFamily: 'OpenSans',
                         fontWeight: FontWeight.w300,
                         color: Colors.grey[600],
-                        fontSize: screenWidth * 0.030,
+                        fontSize: 12,
                       ),
                     ),
                   ),
+                SizedBox(height: 20),
               ],
             ),
           ),

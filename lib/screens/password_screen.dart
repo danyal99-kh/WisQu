@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wisqu/screens/ResetPasword.dart';
+import 'package:wisqu/widget/custom_button.dart';
+import 'package:wisqu/widget/custom_textfield.dart';
 
 class PasswordScreen extends StatelessWidget {
   const PasswordScreen({super.key});
@@ -21,7 +23,6 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late final TextEditingController _passwordController;
   late final TextEditingController _confirmPasswordController;
-  String? _confirmPasswordError;
   bool _isConfirmPasswordVisible = false;
   @override
   void initState() {
@@ -61,19 +62,16 @@ class _LoginPageState extends State<LoginPage>
       body: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeOut,
-        // وقتی کیبورد باز میشه، کل محتوا کمی بالا میاد
         transform: Matrix4.translationValues(
           0,
-          isKeyboardOpen ? -size.height * 0.09 : 0, // مقدار بالا رفتن
+          isKeyboardOpen ? -size.height * 0.09 : 0,
           0,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // 🔹 لوگو با انیمیشن کوچک شدن
             const SizedBox(height: 15),
 
-            // 🔹 متن توضیحی با کوچک شدن تطبیقی
             Text(
               'Welcome back, X!',
               style: TextStyle(
@@ -102,61 +100,11 @@ class _LoginPageState extends State<LoginPage>
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(240, 244, 250, 1),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: TextFormField(
-                      controller: _confirmPasswordController,
-                      obscureText: !_isConfirmPasswordVisible,
-                      textAlign: TextAlign.start,
-                      decoration: InputDecoration(
-                        prefixIcon: Image.asset(
-                          'assets/icons/lock.png',
-                          width: 22,
-                          height: 22,
-                        ),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isConfirmPasswordVisible =
-                                  !_isConfirmPasswordVisible;
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Image.asset(
-                              _isConfirmPasswordVisible
-                                  ? 'assets/icons/eye.png'
-                                  : 'assets/icons/eyeclosed.png',
-                              width: 24,
-                              height: 24,
-                            ),
-                          ),
-                        ),
-
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: const Color.fromRGBO(240, 244, 250, 1),
-                        hintText: "Enter password",
-                        errorText: _confirmPasswordError,
-                        errorStyle: const TextStyle(
-                          color: Color.fromARGB(255, 230, 81, 70),
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
+                  CustomTextField(
+                    controller: _passwordController,
+                    hintText: "Enter password",
+                    iconPath: "assets/icons/lock.png",
+                    isPassword: true,
                   ),
                   const SizedBox(height: 10),
 
@@ -167,9 +115,7 @@ class _LoginPageState extends State<LoginPage>
                         fontSize: 16,
                       ),
                       children: [
-                        const TextSpan(
-                          text: "Forgot your password?  ",
-                        ), // متن عادی
+                        const TextSpan(text: "Forgot your password?  "),
                         WidgetSpan(
                           child: GestureDetector(
                             onTap: () {
@@ -198,27 +144,9 @@ class _LoginPageState extends State<LoginPage>
               ),
             ),
             SizedBox(height: 25),
-            // 🔹 دکمه Continue
             Padding(
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
-                  minimumSize: const Size(double.infinity, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'Login',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'OpenSans',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+              child: CustomButton(onPressed: () {}, text: 'login'),
             ),
           ],
         ),

@@ -18,34 +18,29 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
 
-          // فونت اصلی: OpenSans
           fontFamily: 'OpenSans',
 
           // اگر کاراکتر فارسی بود → Estedad
           fontFamilyFallback: const ['Estedad'],
 
           // همه استایل‌های متنی بولد باشن
-          textTheme:
-              const TextTheme(
-                displayLarge: TextStyle(fontWeight: FontWeight.w600),
-                displayMedium: TextStyle(fontWeight: FontWeight.w600),
-                displaySmall: TextStyle(fontWeight: FontWeight.w600),
-                headlineLarge: TextStyle(fontWeight: FontWeight.w600),
-                headlineMedium: TextStyle(fontWeight: FontWeight.w600),
-                headlineSmall: TextStyle(fontWeight: FontWeight.w600),
-                titleLarge: TextStyle(fontWeight: FontWeight.w600),
-                titleMedium: TextStyle(fontWeight: FontWeight.w600),
-                titleSmall: TextStyle(fontWeight: FontWeight.w600),
-                bodyLarge: TextStyle(fontWeight: FontWeight.w600),
-                bodyMedium: TextStyle(fontWeight: FontWeight.w600),
-                bodySmall: TextStyle(fontWeight: FontWeight.w600),
-                labelLarge: TextStyle(fontWeight: FontWeight.w600),
-                labelMedium: TextStyle(fontWeight: FontWeight.w600),
-                labelSmall: TextStyle(fontWeight: FontWeight.w600),
-              ).apply(
-                // همه فونت‌ها از OpenSans-BOLD استفاده کنن
-                fontFamily: 'OpenSans',
-              ),
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(fontWeight: FontWeight.w600),
+            displayMedium: TextStyle(fontWeight: FontWeight.w600),
+            displaySmall: TextStyle(fontWeight: FontWeight.w600),
+            headlineLarge: TextStyle(fontWeight: FontWeight.w600),
+            headlineMedium: TextStyle(fontWeight: FontWeight.w600),
+            headlineSmall: TextStyle(fontWeight: FontWeight.w600),
+            titleLarge: TextStyle(fontWeight: FontWeight.w600),
+            titleMedium: TextStyle(fontWeight: FontWeight.w600),
+            titleSmall: TextStyle(fontWeight: FontWeight.w600),
+            bodyLarge: TextStyle(fontWeight: FontWeight.w600),
+            bodyMedium: TextStyle(fontWeight: FontWeight.w600),
+            bodySmall: TextStyle(fontWeight: FontWeight.w600),
+            labelLarge: TextStyle(fontWeight: FontWeight.w600),
+            labelMedium: TextStyle(fontWeight: FontWeight.w600),
+            labelSmall: TextStyle(fontWeight: FontWeight.w600),
+          ).apply(fontFamily: 'OpenSans'),
         ),
         debugShowCheckedModeBanner: false,
         title: 'Chat Bot',
