@@ -8,17 +8,37 @@ class ChatMessage {
   ChatMessage({required this.text, required this.isUser});
 }
 
+class ChatSession {
+  final String id;
+  String title;
+  bool isPinned;
+  final List<ChatMessage> messages;
+  DateTime lastUpdated;
+
+  ChatSession({
+    required this.id,
+    required this.title,
+    this.isPinned = false,
+    required this.messages,
+    required this.lastUpdated,
+  });
+}
+
 class ChatProvider extends ChangeNotifier {
   final TextEditingController textController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+
   final List<ChatMessage> _messages = [];
   List<ChatMessage> get messages => _messages;
 
+  final List<ChatSession> _chatHistory = [];
+  List<ChatSession> get chatHistory => _chatHistory;
+
+  String? _currentChatId;
   bool _isResponding = false;
 
-  // فقط یک تابع اسکرول: نرم، هوشمند و بدون تکون
+  // اسکرول نرم
   void scrollToBottom() {
-    // صبر تا بعد از رندر فریم (بهترین روش)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!scrollController.hasClients) return;
 
@@ -26,7 +46,6 @@ class ChatProvider extends ChangeNotifier {
       final current = scrollController.offset;
       final distance = maxExtent - current;
 
-      // فقط اگر فاصله بیشتر از 100 پیکسل باشه، اسکرول کن
       if (distance > 100) {
         scrollController.animateTo(
           maxExtent,
@@ -36,7 +55,6 @@ class ChatProvider extends ChangeNotifier {
           curve: Curves.easeOutCubic,
         );
       } else if (distance > 0) {
-        // اسکرول خیلی کوتاه → خیلی نرم
         scrollController.animateTo(
           maxExtent,
           duration: const Duration(milliseconds: 200),
@@ -51,40 +69,148 @@ class ChatProvider extends ChangeNotifier {
     final text = textController.text.trim();
     if (text.isEmpty || _isResponding) return;
 
-    // افزودن پیام کاربر
+    // شروع چت جدید
+    if (_currentChatId == null || _messages.isEmpty) {
+      _startNewChat(text);
+    }
+
+    // اضافه کردن پیام کاربر
     _messages.add(ChatMessage(text: text, isUser: true));
     textController.clear();
-    notifyListeners();
 
-    // اسکرول نرم بعد از اضافه شدن پیام کاربر
+    // عنوان چت (فقط اولین پیام)
+    if (_messages.length == 1) {
+      final currentChat = _getCurrentChatSession();
+      if (currentChat != null) {
+        currentChat.title = text.length > 40
+            ? '${text.substring(0, 40)}...'
+            : text;
+      }
+    }
+
+    notifyListeners();
     scrollToBottom();
 
-    // شبیه‌سازی پاسخ بات
+    // پاسخ بات
     _isResponding = true;
     Future.delayed(const Duration(milliseconds: 700), () {
-      _messages.add(ChatMessage(text: _generateResponse(text), isUser: false));
+      final response = _generateResponse(text);
+      _messages.add(ChatMessage(text: response, isUser: false));
       _isResponding = false;
+
+      // به‌روزرسانی زمان و مرتب‌سازی
+      final currentChat = _getCurrentChatSession();
+      if (currentChat != null) {
+        currentChat.lastUpdated = DateTime.now();
+        _sortChatHistory(); // مهم: بعد از پاسخ بات
+      }
+
       notifyListeners();
-
-      // اسکرول نرم بعد از پاسخ بات
       scrollToBottom();
-
-      // انیمیشن پیام جدید
       onNewBotMessage?.call();
     });
   }
 
+  // شروع چت جدید
+  void _startNewChat(String firstMessage) {
+    final newChat = ChatSession(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: firstMessage.length > 40
+          ? '${firstMessage.substring(0, 40)}...'
+          : firstMessage,
+      messages: [],
+      lastUpdated: DateTime.now(),
+    );
+
+    _chatHistory.add(newChat); // اضافه به لیست
+    _currentChatId = newChat.id;
+    _messages.clear();
+
+    _sortChatHistory(); // مرتب‌سازی: پین‌شده‌ها بالا، جدیدترین اول
+    notifyListeners();
+  }
+
+  // بارگذاری چت
+  void loadChat(String chatId) {
+    final chat = _chatHistory.firstWhere(
+      (c) => c.id == chatId,
+      orElse: () => _chatHistory.first,
+    );
+    _currentChatId = chat.id;
+    _messages.clear();
+    _messages.addAll(chat.messages);
+    notifyListeners();
+    scrollToBottom();
+  }
+
+  // پین/آنپین
+  void togglePinChat(String chatId) {
+    final chat = _chatHistory.firstWhere((c) => c.id == chatId);
+    chat.isPinned = !chat.isPinned;
+    _sortChatHistory(); // همیشه بالا بمونن
+    notifyListeners();
+  }
+
+  // تغییر نام
+  void renameChat(String chatId, String newTitle) {
+    final chat = _chatHistory.firstWhere((c) => c.id == chatId);
+    chat.title = newTitle.trim().isEmpty ? "Untitled Chat" : newTitle;
+    notifyListeners();
+  }
+
+  // حذف چت
+  void deleteChat(String chatId) {
+    _chatHistory.removeWhere((c) => c.id == chatId);
+    if (_currentChatId == chatId) {
+      clearMessages();
+      _currentChatId = null;
+      if (_chatHistory.isNotEmpty) {
+        loadChat(_chatHistory.first.id);
+      }
+    }
+    notifyListeners();
+  }
+
+  void clearMessages() {
+    _messages.clear();
+    notifyListeners();
+  }
+
+  void clearAllMessages() {
+    _messages.clear();
+    _chatHistory.clear();
+    _currentChatId = null;
+    notifyListeners();
+  }
+
+  // مرتب‌سازی هوشمند
+  void _sortChatHistory() {
+    _chatHistory.sort((a, b) {
+      // 1. پین‌شده‌ها همیشه اول
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+
+      // 2. بین پین‌شده‌ها: جدیدترین اول
+      if (a.isPinned && b.isPinned) {
+        return b.lastUpdated.compareTo(a.lastUpdated);
+      }
+
+      // 3. بین غیرپین‌شده‌ها: جدیدترین اول
+      return b.lastUpdated.compareTo(a.lastUpdated);
+    });
+  }
+
+  ChatSession? _getCurrentChatSession() {
+    if (_currentChatId == null) return null;
+    return _chatHistory.firstWhere((c) => c.id == _currentChatId);
+  }
+
   String _generateResponse(String userText) {
     final lower = userText.toLowerCase();
-    if (lower.contains('سلام')) {
-      return 'سلام جناب خوش اومدی!';
-    } else if (lower.contains('حالت چطوره')) {
-      return 'من عالی‌ام تو چطوری؟';
-    } else if (lower.contains('کمک')) {
-      return 'حتماً! بگو در چه زمینه‌ای کمک می‌خوای؟';
-    } else {
-      return 'سلاممم من ویس‌کو هستم, دستیار هوشمند, چطور می‌تونم کمکت کنم؟';
-    }
+    if (lower.contains('سلام')) return 'سلام جناب خوش اومدی!';
+    if (lower.contains('حالت چطوره')) return 'من عالی‌ام تو چطوری؟';
+    if (lower.contains('کمک')) return 'حتماً! بگو در چه زمینه‌ای کمک می‌خوای؟';
+    return 'سلاممم من ویس‌کو هستم, دستیار هوشمند, چطور می‌تونم کمکت کنم؟';
   }
 
   @override

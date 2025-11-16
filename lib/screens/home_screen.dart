@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/screens/getstarted_screens.dart';
+import 'package:wisqu/screens/sidebar.dart';
 import '../../state/chat_provider.dart';
 import 'package:wisqu/screens/settings_modal.dart';
-import 'settings_modal.dart'; // مسیر دقیق رو بده
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +20,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final ValueNotifier<bool> isTyping = ValueNotifier(false);
   final ValueNotifier<int?> _selectedMessageIndex = ValueNotifier(null);
   late final AnimationController _messageAnimController;
-
+  final GlobalKey _settingsButtonKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -44,9 +45,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final screenWidth = MediaQuery.of(context).size.width;
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    // bool isTyping = false;
-
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: const AppSidebar(),
+
       extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFFF6F7FA),
 
@@ -264,7 +266,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                           );
 
-                          // انیمیشن پیام جدید
                           if (!message.isUser &&
                               index == chatProvider.messages.length - 1) {
                             return FadeTransition(
@@ -351,10 +352,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   2,
                               color: Colors.white.withOpacity(0.15),
                               child: Padding(
-                                // فقط padding افقی
                                 padding: const EdgeInsets.only(
                                   top: 18,
-                                  left: 13,
+                                  left: 4,
                                   right: 13,
                                 ),
                                 child: Row(
@@ -362,44 +362,70 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    // لوگو و نام
-                                    ValueListenableBuilder<bool>(
-                                      valueListenable: showWelcomeText,
-                                      builder: (context, isVisible, _) {
-                                        if (isVisible) return const SizedBox();
-                                        return Row(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Image.asset(
-                                                'assets/logo.png',
-                                                height: 34,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            const Text(
-                                              "WisQu",
-                                              style: TextStyle(
-                                                color: Color.fromARGB(
-                                                  255,
-                                                  72,
-                                                  72,
-                                                  72,
-                                                ),
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-
-                                    // دکمه‌ها
                                     Row(
                                       children: [
                                         IconButton(
+                                          icon: Image.asset(
+                                            "assets/icons/saidbar.png",
+                                            width: 24,
+                                            height: 24,
+                                            color: const Color.fromARGB(
+                                              255,
+                                              72,
+                                              72,
+                                              72,
+                                            ),
+                                          ),
+                                          onPressed: () => _scaffoldKey
+                                              .currentState
+                                              ?.openDrawer(),
+
+                                          constraints: const BoxConstraints(),
+                                        ),
+
+                                        const SizedBox(width: 8),
+
+                                        ValueListenableBuilder<bool>(
+                                          valueListenable: showWelcomeText,
+                                          builder: (context, isVisible, _) {
+                                            if (isVisible) {
+                                              return const SizedBox();
+                                            }
+                                            return Row(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  child: Image.asset(
+                                                    'assets/logo.png',
+                                                    height: 34,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                const Text(
+                                                  "WisQu",
+                                                  style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                      255,
+                                                      72,
+                                                      72,
+                                                      72,
+                                                    ),
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          key: _settingsButtonKey,
                                           icon: Image.asset(
                                             "assets/icons/settings.png",
                                             width: 20,
@@ -480,14 +506,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: const Color.fromARGB(
-                      215,
+                      209,
                       237,
                       242,
                       250,
                     ), // #EDF2FAB2
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x14000000), // #00000014
+                        color: Color(0x14000000),
                         offset: Offset(0, 4),
                         blurRadius: 8,
                       ),
