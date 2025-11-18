@@ -67,14 +67,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ListView.builder(
                         controller: chatProvider.scrollController,
                         padding: EdgeInsets.only(
-                          top: chatProvider.messages.length > 1
-                              ? kToolbarHeight +
-                                    MediaQuery.of(context).padding.top +
-                                    18
-                              : 12,
-                          left: 0,
-                          right: 2,
-                          bottom: 90,
+                          top:
+                              kToolbarHeight +
+                              MediaQuery.of(context).padding.top +
+                              20, // همیشه از زیر هدر شروع شه
+                          left: 8,
+                          right: 8,
+                          bottom: 100,
                         ),
                         itemCount: chatProvider.messages.length,
                         itemBuilder: (context, index) {
@@ -193,10 +192,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 _buildIconButton(
-                                                  icon: Image.asset(
-                                                    "assets/icons/copy.png",
-                                                    width: 16,
-                                                    height: 16,
+                                                  icon: SvgPicture.asset(
+                                                    "assets/icons/copy.svg",
+                                                    width: 18,
+                                                    height: 18,
                                                   ),
                                                   tooltip: 'Copy',
                                                   onPressed: () {
@@ -220,38 +219,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 if (message.isUser &&
                                                     isLastUserMessage)
                                                   _buildIconButton(
-                                                    icon: Image.asset(
-                                                      "assets/icons/pen.png",
-                                                      width: 16,
-                                                      height: 16,
+                                                    icon: SvgPicture.asset(
+                                                      "assets/icons/pen.svg",
+                                                      width: 18,
+                                                      height: 18,
                                                     ),
                                                     tooltip: 'Edit',
                                                     onPressed: () {},
                                                   ),
                                                 if (!message.isUser) ...[
                                                   _buildIconButton(
-                                                    icon: Image.asset(
-                                                      "assets/icons/thumbs-up.png",
-                                                      width: 16,
-                                                      height: 16,
+                                                    icon: SvgPicture.asset(
+                                                      "assets/icons/copy.svg",
+                                                      width: 18,
+                                                      height: 18,
                                                     ),
                                                     tooltip: 'Like',
                                                     onPressed: () {},
                                                   ),
                                                   _buildIconButton(
-                                                    icon: Image.asset(
-                                                      "assets/icons/thumbs-down.png",
-                                                      width: 16,
-                                                      height: 16,
+                                                    icon: SvgPicture.asset(
+                                                      "assets/icons/thumbs-up.svg",
+                                                      width: 18,
+                                                      height: 18,
                                                     ),
                                                     tooltip: 'Dislike',
                                                     onPressed: () {},
                                                   ),
                                                   _buildIconButton(
-                                                    icon: Image.asset(
-                                                      "assets/icons/refresh-cw.png",
-                                                      width: 16,
-                                                      height: 16,
+                                                    icon: SvgPicture.asset(
+                                                      "assets/icons/thumbs-down.svg",
+                                                      width: 18,
+                                                      height: 18,
                                                     ),
                                                     tooltip: 'Regenerate',
                                                     onPressed: () {},
@@ -310,8 +309,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           children: [
                             Hero(
                               tag: "appLogo",
-                              child: Image.asset(
-                                'assets/logo.png',
+                              child: SvgPicture.asset(
+                                'assets/icons/logo.svg',
                                 width: screenWidth * 0.3,
                                 height: screenHeight * 0.13,
                                 fit: BoxFit.contain,
@@ -350,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               height:
                                   kToolbarHeight +
                                   MediaQuery.of(context).padding.top +
-                                  2,
+                                  8,
                               color: Colors.white.withOpacity(0.15),
                               padding: const EdgeInsets.only(
                                 top: 18,
@@ -372,9 +371,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         // Settings
                                         IconButton(
                                           icon: SvgPicture.asset(
-                                            "assets/icons/setting.svg",
-                                            width: 18,
-                                            height: 18,
+                                            "assets/icons/settings.svg",
+                                            width: 22,
+                                            height: 22,
                                           ),
                                           onPressed: () =>
                                               showSettingsPopup(context),
@@ -431,8 +430,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             borderRadius: BorderRadius.circular(
                                               8,
                                             ),
-                                            child: Image.asset(
-                                              'assets/logo.png',
+                                            child: SvgPicture.asset(
+                                              'assets/icons/logo.svg',
                                               height: 36,
                                               fit: BoxFit.contain,
                                             ),
@@ -534,10 +533,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           // اگر لاگین نکرده ولی پیام فرستاده → فقط Settings + Get Started
                                           else ...[
                                             IconButton(
-                                              icon: Image.asset(
-                                                "assets/icons/settings.png",
-                                                width: 22,
-                                                height: 22,
+                                              icon: SvgPicture.asset(
+                                                "assets/icons/settings.svg",
+                                                width: 20,
+                                                height: 20,
                                               ),
                                               onPressed: () =>
                                                   showSettingsPopup(context),
@@ -697,8 +696,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                                 child: IconButton(
                                   padding: EdgeInsets.zero,
-                                  icon: Image.asset(
-                                    "assets/icons/Send.png",
+                                  icon: SvgPicture.asset(
+                                    "assets/icons/Send.svg",
                                     width: 20,
                                     height: 20,
                                   ),

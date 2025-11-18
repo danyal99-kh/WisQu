@@ -33,39 +33,41 @@ class ChatProvider extends ChangeNotifier {
 
   final List<ChatSession> _chatHistory = [];
   List<ChatSession> get chatHistory => _chatHistory;
-  String? get currentChatId => _currentChatId;
-  String? _currentChatId;
-  bool _isResponding = false;
 
-  // اسکرول نرم
-  void scrollToBottom() {
+  String? _currentChatId;
+  String? get currentChatId => _currentChatId;
+
+  bool _isResponding = false;
+  bool get isResponding => _isResponding;
+  bool _isDisposed = false;
+
+  // اسکرول هوشمند (مثل ChatGPT: فقط وقتی کاربر نزدیک پایین باشه)
+  void scrollToBottom({bool force = false}) {
+    if (!scrollController.hasClients) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!scrollController.hasClients) return;
 
-      final maxExtent = scrollController.position.maxScrollExtent;
-      final current = scrollController.offset;
-      final distance = maxExtent - current;
+      final position = scrollController.position;
+      final max = position.maxScrollExtent;
+      final current = position.pixels;
+      final distance = max - current;
 
-      if (distance > 100) {
+      // اگر کاربر نزدیک پایین باشه یا force باشه → اسکرول کن
+      if (force || distance < 300) {
         scrollController.animateTo(
-          maxExtent,
+          max,
           duration: Duration(
-            milliseconds: (distance * 0.8).clamp(200, 400).toInt(),
+            milliseconds: (distance * 0.6).clamp(200, 500).toInt(),
           ),
           curve: Curves.easeOutCubic,
-        );
-      } else if (distance > 0) {
-        scrollController.animateTo(
-          maxExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
         );
       }
     });
   }
 
   void startNewChat() {
-    // اگه چت فعلی پیام داره، lastUpdated رو آپدیت کن
+    // اگر چت فعلی پیام داره → lastUpdated آپدیت کن
     if (_currentChatId != null && _messages.isNotEmpty) {
       final current = _getCurrentChatSession();
       if (current != null) {
@@ -73,47 +75,49 @@ class ChatProvider extends ChangeNotifier {
       }
     }
 
-    // ساخت یه چت جدید با عنوان موقت
-    final newChatId = DateTime.now().millisecondsSinceEpoch.toString();
+    final newId = DateTime.now().millisecondsSinceEpoch.toString();
     final newSession = ChatSession(
-      id: newChatId,
-      title: "New Chat", // عنوان موقت
+      id: newId,
+      title: "چت جدید", // بهتر از "New Chat"
       messages: [],
       lastUpdated: DateTime.now(),
     );
 
-    _chatHistory.add(newSession);
-    _currentChatId = newChatId;
-
-    // پاک کردن پیام‌های فعلی
+    _chatHistory.insert(0, newSession); // جدیدترین همیشه اول
+    _currentChatId = newId;
     _messages.clear();
     textController.clear();
-    scrollController.jumpTo(0);
 
     _sortChatHistory();
     notifyListeners();
+
+    // اسکرول به بالا بعد از ساخت چت جدید
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.jumpTo(0);
+    });
   }
 
-  // ارسال پیام
   void sendMessage({VoidCallback? onNewBotMessage}) {
     final text = textController.text.trim();
     if (text.isEmpty || _isResponding) return;
 
-    final userMessage = ChatMessage(text: text, isUser: true);
-    _messages.add(userMessage);
-
+    // اگر چت فعلی وجود نداره → اول بساز
     if (_currentChatId == null) {
       startNewChat();
     }
+
+    final userMessage = ChatMessage(text: text, isUser: true);
+    _messages.add(userMessage);
 
     final currentSession = _getCurrentChatSession()!;
     currentSession.messages.add(userMessage);
 
     textController.clear();
 
+    // عنوان چت با اولین پیام کاربر تنظیم بشه
     if (currentSession.messages.length == 1) {
-      currentSession.title = text.length > 40
-          ? '${text.substring(0, 40)}...'
+      currentSession.title = text.length > 50
+          ? '${text.substring(0, 47)}...'
           : text;
     }
 
@@ -121,11 +125,16 @@ class ChatProvider extends ChangeNotifier {
     _sortChatHistory();
 
     notifyListeners();
-    scrollToBottom();
+    scrollToBottom(force: true); // پیام کاربر حتماً دیده بشه
 
-    // پاسخ بات
+    // شبیه‌سازی پاسخ بات
     _isResponding = true;
-    Future.delayed(const Duration(milliseconds: 700), () {
+    notifyListeners();
+
+    Future.delayed(const Duration(milliseconds: 800), () {
+      // چک کن پراوایدر هنوز زنده باشه
+      if (_isDisposed) return;
+
       final response = _generateResponse(text);
       final botMessage = ChatMessage(text: response, isUser: false);
 
@@ -136,28 +145,9 @@ class ChatProvider extends ChangeNotifier {
 
       _isResponding = false;
       notifyListeners();
-      scrollToBottom();
+      scrollToBottom(force: true);
       onNewBotMessage?.call();
     });
-  }
-
-  // شروع چت جدید
-  void _startNewChat(String firstMessage) {
-    final newChat = ChatSession(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: firstMessage.length > 40
-          ? '${firstMessage.substring(0, 40)}...'
-          : firstMessage,
-      messages: [],
-      lastUpdated: DateTime.now(),
-    );
-
-    _chatHistory.add(newChat);
-    _currentChatId = newChat.id;
-    _messages.clear();
-
-    _sortChatHistory();
-    notifyListeners();
   }
 
   void loadChat(String chatId) {
@@ -171,62 +161,56 @@ class ChatProvider extends ChangeNotifier {
     _messages.addAll(chat.messages);
 
     notifyListeners();
-    scrollToBottom();
+
+    // اسکرول به پایین بعد از لود چت
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollToBottom(force: true);
+    });
   }
 
-  // پین/آنپین
   void togglePinChat(String chatId) {
     final chat = _chatHistory.firstWhere((c) => c.id == chatId);
     chat.isPinned = !chat.isPinned;
-    _sortChatHistory(); // همیشه بالا بمونن
+    _sortChatHistory();
     notifyListeners();
   }
 
-  // تغییر نام
   void renameChat(String chatId, String newTitle) {
     final chat = _chatHistory.firstWhere((c) => c.id == chatId);
-    chat.title = newTitle.trim().isEmpty ? "Untitled Chat" : newTitle;
+    chat.title = newTitle.trim().isEmpty ? "چت بدون عنوان" : newTitle;
     notifyListeners();
   }
 
-  // حذف چت
   void deleteChat(String chatId) {
     _chatHistory.removeWhere((c) => c.id == chatId);
+
     if (_currentChatId == chatId) {
-      clearMessages();
+      _messages.clear();
       _currentChatId = null;
+
       if (_chatHistory.isNotEmpty) {
         loadChat(_chatHistory.first.id);
+      } else {
+        startNewChat(); // اگر آخرین چت حذف شد → چت جدید بساز
       }
     }
+
     notifyListeners();
   }
 
-  void clearMessages() {
-    _messages.clear();
-    notifyListeners();
-  }
-
-  void clearAllMessages() {
-    _messages.clear();
+  void clearAllHistory() {
     _chatHistory.clear();
+    _messages.clear();
     _currentChatId = null;
+    textController.clear();
+    startNewChat(); // یه چت خالی جدید
     notifyListeners();
   }
 
-  // مرتب‌سازی هوشمند
   void _sortChatHistory() {
     _chatHistory.sort((a, b) {
-      // 1. پین‌شده‌ها همیشه اول
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
-
-      // 2. بین پین‌شده‌ها: جدیدترین اول
-      if (a.isPinned && b.isPinned) {
-        return b.lastUpdated.compareTo(a.lastUpdated);
-      }
-
-      // 3. بین غیرپین‌شده‌ها: جدیدترین اول
       return b.lastUpdated.compareTo(a.lastUpdated);
     });
   }
@@ -238,14 +222,21 @@ class ChatProvider extends ChangeNotifier {
 
   String _generateResponse(String userText) {
     final lower = userText.toLowerCase();
-    if (lower.contains('سلام')) return 'سلام جناب خوش اومدی!';
-    if (lower.contains('حالت چطوره')) return 'من عالی‌ام تو چطوری؟';
-    if (lower.contains('کمک')) return 'حتماً! بگو در چه زمینه‌ای کمک می‌خوای؟';
-    return 'سلاممم من ویس‌کو هستم, دستیار هوشمند, چطور می‌تونم کمکت کنم؟';
+    if (lower.contains('سلام') || lower.contains('درود')) {
+      return 'سلام! چطور می‌تونم کمکت کنم؟ 😊';
+    }
+    if (lower.contains('حالت چطوره') || lower.contains('چطور')) {
+      return 'عالی‌ام! ممنون که پرسیدی، تو چطوری؟';
+    }
+    if (lower.contains('کمک') || lower.contains('سوال')) {
+      return 'حتماً! بپرس، در خدمتم.';
+    }
+    return 'جالب بود! ادامه بده یا سوال دیگه‌ای داری؟';
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     textController.dispose();
     scrollController.dispose();
     super.dispose();

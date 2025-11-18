@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import '../state/chat_provider.dart';
+import 'dart:ui'; // برای ImageFilter.blur
 
 class AppSidebar extends StatefulWidget {
   const AppSidebar({super.key});
@@ -14,10 +15,29 @@ class AppSidebar extends StatefulWidget {
 class _AppSidebarState extends State<AppSidebar> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  bool _isFocused = false;
+  bool _hasText = false;
+  FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    });
+    _searchController.addListener(() {
+      setState(() {
+        _hasText = _searchController.text.isNotEmpty;
+      });
+    });
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -32,7 +52,7 @@ class _AppSidebarState extends State<AppSidebar> {
     }).toList();
 
     return Drawer(
-      width: screenWidth * 0.85,
+      width: screenWidth * 1,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -51,44 +71,107 @@ class _AppSidebarState extends State<AppSidebar> {
                 CircleAvatar(
                   radius: 20,
                   backgroundImage: const AssetImage('assets/user_avatar.png'),
-                  backgroundColor: Colors.grey[300],
+                  backgroundColor: const Color.fromARGB(255, 131, 131, 131),
                 ),
 
-                // فاصله کم بین آواتار و سرچ
                 const SizedBox(width: 8),
 
-                // فیلد جستجو (بدون Expanded)
+                // 🔥 درست‌شده: Search Box با سایه صحیح
                 Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Search Hisory",
-                      hintStyle: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 14,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        size: 20,
-                        color: Colors.grey[600],
-                      ),
-                      filled: true,
-                      fillColor: const Color.fromARGB(255, 251, 251, 251),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: _isFocused
+                          ? [
+                              BoxShadow(
+                                color: const Color.fromARGB(19, 0, 0, 0),
+                                offset: const Offset(0, 3),
+                                blurRadius: 3,
+                              ),
+                            ]
+                          : [],
+                    ),
 
-                      contentPadding: EdgeInsets.zero,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                    // ClipRRect نباید Wrap اصلی باشه
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: _isFocused ? 10 : 0,
+                          sigmaY: _isFocused ? 10 : 0,
+                        ),
+
+                        child: Container(
+                          height: 42,
+                          padding: EdgeInsets.zero,
+                          decoration: BoxDecoration(
+                            color: _isFocused
+                                ? const Color(0xB2EDF2FA)
+                                : const Color.fromARGB(53, 219, 219, 219),
+                            borderRadius: BorderRadius.circular(18),
+                            border: _isFocused
+                                ? Border.all(
+                                    color: const Color(0xFFD1D5DB),
+                                    width: 1,
+                                  )
+                                : null,
+                          ),
+
+                          child: TextField(
+                            controller: _searchController,
+                            focusNode: _focusNode,
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Search History",
+                              hintStyle: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: SvgPicture.asset(
+                                  "assets/icons/serch.svg",
+                                  width: 16,
+                                  height: 16,
+                                ),
+                              ),
+
+                              // ضربدر فقط هنگام فوکوس
+                              suffixIcon: _isFocused
+                                  ? IconButton(
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        size: 18,
+                                        color: Color.fromARGB(255, 26, 26, 26),
+                                      ),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() {
+                                          _searchQuery = "";
+                                        });
+                                        _focusNode.unfocus();
+                                      },
+                                    )
+                                  : null,
+
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 12,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      isDense: true,
                     ),
                   ),
                 ),
+
                 IconButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -117,9 +200,6 @@ class _AppSidebarState extends State<AppSidebar> {
               ],
             ),
           ),
-
-          // فیلد جستجو
-          const SizedBox(height: 8),
 
           // لیست تاریخچه
           Expanded(
@@ -161,7 +241,7 @@ class _AppSidebarState extends State<AppSidebar> {
                           selected: chatProvider.currentChatId == chat.id,
                           tileColor: const Color.fromARGB(221, 255, 255, 255),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           contentPadding: const EdgeInsets.fromLTRB(
                             16,
@@ -172,12 +252,10 @@ class _AppSidebarState extends State<AppSidebar> {
                           title: Row(
                             children: [
                               if (isPinned)
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 4),
-                                  child: Icon(
-                                    Icons.push_pin,
-                                    size: 14,
-                                    color: Colors.black,
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: SvgPicture.asset(
+                                    "assets/icons/pin.svg",
                                   ),
                                 ),
                               Expanded(
@@ -244,13 +322,17 @@ class _AppSidebarState extends State<AppSidebar> {
                                 value: isPinned ? 'unpin' : 'pin',
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      isPinned
-                                          ? Icons.push_pin_outlined
-                                          : Icons.push_pin,
-                                      size: 18,
-                                      color: Colors.grey[700],
-                                    ),
+                                    isPinned
+                                        ? SvgPicture.asset(
+                                            "assets/icons/pin2.svg",
+                                            width: 22,
+                                            height: 22,
+                                          )
+                                        : SvgPicture.asset(
+                                            "assets/icons/pin1.svg",
+                                            width: 22,
+                                            height: 22,
+                                          ),
                                     const SizedBox(width: 8),
                                     Text(isPinned ? "Unpin" : "Pin"),
                                   ],
