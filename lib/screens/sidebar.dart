@@ -1,5 +1,6 @@
 // lib/widgets/sidebar.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import '../state/chat_provider.dart';
 
@@ -92,11 +93,10 @@ class _AppSidebarState extends State<AppSidebar> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: Image.asset(
-                    "assets/icons/saidbar.png",
-                    width: 24,
-                    height: 24,
-                    color: const Color.fromARGB(255, 72, 72, 72),
+                  icon: SvgPicture.asset(
+                    "assets/icons/sidbar.svg",
+                    width: 18,
+                    height: 18,
                   ),
                 ),
               ],
@@ -133,7 +133,7 @@ class _AppSidebarState extends State<AppSidebar> {
                     ),
                   )
                 : ListView.builder(
-                    physics: const ClampingScrollPhysics(), // مهم!
+                    physics: const ClampingScrollPhysics(),
                     clipBehavior: Clip.antiAlias,
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     itemCount: filteredHistory.length,
@@ -159,14 +159,8 @@ class _AppSidebarState extends State<AppSidebar> {
                             160,
                           ),
                           selected: chatProvider.currentChatId == chat.id,
-                          tileColor: const Color.fromARGB(
-                            221,
-                            255,
-                            255,
-                            255,
-                          ), // رنگ پس‌زمینه
+                          tileColor: const Color.fromARGB(221, 255, 255, 255),
                           shape: RoundedRectangleBorder(
-                            // مهم: گوشه‌ها گرد بشه
                             borderRadius: BorderRadius.circular(16),
                           ),
                           contentPadding: const EdgeInsets.fromLTRB(
@@ -209,10 +203,10 @@ class _AppSidebarState extends State<AppSidebar> {
                           ),
                           trailing: PopupMenuButton<String>(
                             color: Colors.white,
-                            icon: Icon(
-                              Icons.more_vert_sharp,
-                              size: 20,
-                              color: const Color.fromRGBO(93, 63, 211, 1),
+                            icon: SvgPicture.asset(
+                              "assets/icons/3.svg",
+                              width: 18,
+                              height: 18,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

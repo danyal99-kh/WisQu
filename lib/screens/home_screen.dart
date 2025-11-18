@@ -8,6 +8,7 @@ import 'package:wisqu/screens/sidebar.dart';
 import 'package:wisqu/state/auth_provider.dart';
 import '../../state/chat_provider.dart';
 import 'package:wisqu/screens/settings_modal.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -351,178 +352,228 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   MediaQuery.of(context).padding.top +
                                   2,
                               color: Colors.white.withOpacity(0.15),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 18,
-                                  left: 4,
-                                  right: 13,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
+                              padding: const EdgeInsets.only(
+                                top: 18,
+                                left: 12,
+                                right: 12,
+                              ),
+                              child: Consumer2<AuthProvider, ChatProvider>(
+                                builder: (context, authProvider, chatProvider, child) {
+                                  final bool isLoggedIn =
+                                      authProvider.isLoggedIn;
+                                  final bool hasMessages =
+                                      chatProvider.messages.isNotEmpty;
+
+                                  // حالت 1: تازه وارد شده → فقط Settings + Get Started
+                                  if (!isLoggedIn && !hasMessages) {
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
+                                        // Settings
                                         IconButton(
-                                          icon: Image.asset(
-                                            "assets/icons/saidbar.png",
-                                            width: 24,
-                                            height: 24,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              72,
-                                              72,
-                                              72,
+                                          icon: SvgPicture.asset(
+                                            "assets/icons/setting.svg",
+                                            width: 18,
+                                            height: 18,
+                                          ),
+                                          onPressed: () =>
+                                              showSettingsPopup(context),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Get Started
+                                        ElevatedButton(
+                                          onPressed: () =>
+                                              showLoginDialog(context),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFF5D3FD3,
                                             ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 10,
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            "Get Started",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+
+                                  return Row(
+                                    children: [
+                                      if (isLoggedIn)
+                                        IconButton(
+                                          icon: SvgPicture.asset(
+                                            "assets/icons/sidbar.svg",
+                                            width: 20,
+                                            height: 20,
                                           ),
                                           onPressed: () => _scaffoldKey
                                               .currentState
                                               ?.openDrawer(),
-
-                                          constraints: const BoxConstraints(),
                                         ),
 
-                                        const SizedBox(width: 8),
+                                      if (isLoggedIn) const SizedBox(width: 5),
 
-                                        ValueListenableBuilder<bool>(
-                                          valueListenable: showWelcomeText,
-                                          builder: (context, isVisible, _) {
-                                            if (isVisible) {
-                                              return const SizedBox();
-                                            }
-                                            return Row(
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  child: Image.asset(
-                                                    'assets/logo.png',
-                                                    height: 34,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                const Text(
-                                                  "WisQu",
-                                                  style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                      255,
-                                                      72,
-                                                      72,
-                                                      72,
-                                                    ),
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
+                                      Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            child: Image.asset(
+                                              'assets/logo.png',
+                                              height: 36,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          const Text(
+                                            "WisQu",
+                                            style: TextStyle(
+                                              color: Color.fromARGB(
+                                                255,
+                                                72,
+                                                72,
+                                                72,
+                                              ),
+                                              fontSize: 21,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
 
-                                    Row(
-                                      children: [
-                                        Consumer<AuthProvider>(
-                                          builder: (context, authProvider, child) {
-                                            // اگر لاگین نکرده → Settings + Get Started
-                                            // اگر لاگین کرده → فقط New Chat (Settings حذف بشه)
-                                            if (!authProvider.isLoggedIn) {
-                                              return Row(
-                                                children: [
-                                                  IconButton(
-                                                    icon: Image.asset(
-                                                      "assets/icons/settings.png",
-                                                      width: 20,
-                                                      height: 20,
-                                                    ),
-                                                    onPressed: () =>
-                                                        showSettingsPopup(
-                                                          context,
-                                                        ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  ConstrainedBox(
-                                                    constraints:
-                                                        const BoxConstraints(
-                                                          minWidth: 80,
-                                                          maxWidth: 130,
-                                                        ),
-                                                    child: ElevatedButton(
-                                                      onPressed: () =>
-                                                          showLoginDialog(
-                                                            context,
-                                                          ),
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor:
-                                                            const Color(
-                                                              0xFF5D3FD3,
-                                                            ),
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                20,
-                                                              ),
-                                                        ),
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 10,
-                                                              vertical: 8,
-                                                            ),
-                                                        minimumSize: const Size(
-                                                          0,
-                                                          35,
-                                                        ),
-                                                      ),
-                                                      child: const FittedBox(
-                                                        fit: BoxFit.scaleDown,
-                                                        child: Text(
-                                                          "Get Started",
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                          maxLines: 1,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            } else {
-                                              // فقط New Chat وقتی لاگین شده
-                                              return IconButton(
-                                                icon: Image.asset(
-                                                  "assets/icons/newchat.png",
-                                                  width: 25,
-                                                  height: 25,
-                                                ),
+                                      const Spacer(),
+
+                                      // راست: دکمه‌های عملیاتی
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (isLoggedIn) ...[
+                                            _buildNewChatButton(chatProvider),
+                                            SizedBox(
+                                              width: 79,
+                                              height: 36,
+                                              child: OutlinedButton(
                                                 onPressed: () {
-                                                  final chatProvider =
-                                                      Provider.of<ChatProvider>(
-                                                        context,
-                                                        listen: false,
-                                                      );
-                                                  chatProvider.startNewChat();
-                                                  showWelcomeText.value = true;
-                                                  _selectedMessageIndex.value =
-                                                      null;
-                                                  FocusScope.of(
+                                                  ScaffoldMessenger.of(
                                                     context,
-                                                  ).unfocus();
-                                                  _messageAnimController
-                                                      .reset();
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Share feature coming soon!",
+                                                      ),
+                                                    ),
+                                                  );
                                                 },
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                                style: OutlinedButton.styleFrom(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 8,
+                                                      ),
+                                                  side: const BorderSide(
+                                                    color: Color(
+                                                      0xFFE5E7EB,
+                                                    ), // #E5E7EB
+                                                    width: 2,
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          18,
+                                                        ), // گرد کامل برای ارتفاع 36
+                                                  ),
+                                                  backgroundColor: Colors.white,
+                                                  elevation: 0,
+                                                  minimumSize: const Size(
+                                                    36,
+                                                    36,
+                                                  ), // min-width & min-height
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      "assets/icons/share.svg",
+                                                      width: 18,
+                                                      height: 18,
+                                                    ),
+
+                                                    const SizedBox(
+                                                      width: 8,
+                                                    ), // gap: 8px
+                                                    const Text(
+                                                      "Share",
+                                                      style: TextStyle(
+                                                        color: Colors.black87,
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ]
+                                          // اگر لاگین نکرده ولی پیام فرستاده → فقط Settings + Get Started
+                                          else ...[
+                                            IconButton(
+                                              icon: Image.asset(
+                                                "assets/icons/settings.png",
+                                                width: 22,
+                                                height: 22,
+                                              ),
+                                              onPressed: () =>
+                                                  showSettingsPopup(context),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            ElevatedButton(
+                                              onPressed: () =>
+                                                  showLoginDialog(context),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(
+                                                  0xFF5D3FD3,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 10,
+                                                    ),
+                                              ),
+                                              child: const Text(
+                                                "Get Started",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -719,6 +770,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: icon,
           ),
           onPressed: () {},
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewChatButton(ChatProvider chatProvider) {
+    return GestureDetector(
+      onTap: () {
+        chatProvider.startNewChat();
+        showWelcomeText.value = true;
+        _selectedMessageIndex.value = null;
+        FocusScope.of(context).unfocus();
+        _messageAnimController.reset();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+        child: // داخل _buildNewChatButton
+        SvgPicture.asset(
+          "assets/icons/newchat.svg",
+          width: 20,
+          height: 20,
+          // colorFilter: const ColorFilter.mode(
+          //   Color(0xFF374151),
+          //   BlendMode.srcIn,
+          // ),
         ),
       ),
     );
