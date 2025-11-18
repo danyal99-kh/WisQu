@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wisqu/state/auth_provider.dart';
+import 'package:wisqu/state/chat_provider.dart';
 import 'package:wisqu/widget/custom_button.dart';
 import 'package:wisqu/widget/custom_textfield.dart';
 
@@ -14,17 +17,21 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   double _strengthLevel = -1.0;
-  String? _confirmPasswordError;
+  final ValueNotifier<String?> _confirmPasswordError = ValueNotifier<String?>(
+    null,
+  );
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
   @override
   void initState() {
     super.initState();
 
-    // این دو خط را اضافه کن
     _passwordController.addListener(() {
       _updateProgress(_passwordController.text);
+      // وقتی پسورد تغییر کرد، اگر confirm هم پر بود دوباره چک کن
+      if (_confirmPasswordController.text.isNotEmpty) {
+        _validateConfirmPassword(_confirmPasswordController.text);
+      }
     });
 
     _confirmPasswordController.addListener(() {
@@ -98,14 +105,13 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   }
 
   void _validateConfirmPassword(String confirmPassword) {
-    setState(() {
-      if (confirmPassword.isNotEmpty &&
-          confirmPassword != _passwordController.text) {
-        _confirmPasswordError = 'Passwords do not match';
-      } else {
-        _confirmPasswordError = null;
-      }
-    });
+    if (confirmPassword.isEmpty) {
+      _confirmPasswordError.value = null;
+    } else if (confirmPassword != _passwordController.text) {
+      _confirmPasswordError.value = 'Passwords do not match';
+    } else {
+      _confirmPasswordError.value = null;
+    }
   }
 
   @override
@@ -113,6 +119,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+    _confirmPasswordError.dispose();
   }
 
   @override
@@ -171,10 +178,13 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       const Text("Password", style: TextStyle(fontSize: 16)),
                       const SizedBox(height: 6),
                       CustomTextField(
-                        hintText: 'Enter your Password',
-                        iconPath: 'assets/icons/lock.png',
                         controller: _passwordController,
+                        hintText: 'Enter your password',
+                        iconPath: 'assets/icons/lock.png',
                         isPassword: true,
+                        errorNotifier: ValueNotifier<String?>(
+                          null,
+                        ), // یا یه ثابت خالی
                       ),
                     ],
                   ),
@@ -281,20 +291,89 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       const SizedBox(height: 6),
                       CustomTextField(
                         controller: _confirmPasswordController,
-                        hintText: 'Confirm Password',
+                        hintText: 'Confirm your password',
                         iconPath: 'assets/icons/lock.png',
                         isPassword: true,
-                        errorMessage: _confirmPasswordError,
+                        errorNotifier: _confirmPasswordError, // این مهمه!
                       ),
                     ],
                   ),
                   SizedBox(height: screenHeight * 0.04),
                   CustomButton(
-                    onPressed: () {
-                      if (_confirmPasswordError == null &&
-                          _strengthLevel >= 2.0) {}
-                    },
+                    onPressed: () async {
+                      // اعتبارسنجی مجدد
+                      _validateConfirmPassword(_confirmPasswordController.text);
 
+                      if (_confirmPasswordError.value != null) return;
+
+                      if (_strengthLevel < 2.0 ||
+                          _passwordController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Please choose a stronger password (Good or higher)",
+                            ),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // همه چیز درسته → شبیه‌سازی ساخت اکانت
+                      await Future.delayed(const Duration(seconds: 2));
+
+                      // لاگین کاربر
+                      Provider.of<AuthProvider>(context, listen: false).login();
+                      Provider.of<ChatProvider>(
+                        context,
+                        listen: false,
+                      ).startNewChat();
+
+                      if (!mounted) return;
+
+                      // پیام موفقیت فارسی و زیبا
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                "Password created successfully! 🎉",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  fontFamily: 'OpenSans',
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: const Color(0xFF5D3FD3),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          duration: const Duration(seconds: 3),
+                          elevation: 10,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 20,
+                          ),
+                        ),
+                      );
+
+                      // برگشت به صفحه اصلی
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
                     text: 'Create Account',
                   ),
                   SizedBox(

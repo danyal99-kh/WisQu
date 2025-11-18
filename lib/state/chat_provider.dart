@@ -33,7 +33,7 @@ class ChatProvider extends ChangeNotifier {
 
   final List<ChatSession> _chatHistory = [];
   List<ChatSession> get chatHistory => _chatHistory;
-
+  String? get currentChatId => _currentChatId;
   String? _currentChatId;
   bool _isResponding = false;
 
@@ -64,29 +64,61 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
+  void startNewChat() {
+    // اگه چت فعلی پیام داره، lastUpdated رو آپدیت کن
+    if (_currentChatId != null && _messages.isNotEmpty) {
+      final current = _getCurrentChatSession();
+      if (current != null) {
+        current.lastUpdated = DateTime.now();
+      }
+    }
+
+    // ساخت یه چت جدید با عنوان موقت
+    final newChatId = DateTime.now().millisecondsSinceEpoch.toString();
+    final newSession = ChatSession(
+      id: newChatId,
+      title: "New Chat", // عنوان موقت
+      messages: [],
+      lastUpdated: DateTime.now(),
+    );
+
+    _chatHistory.add(newSession);
+    _currentChatId = newChatId;
+
+    // پاک کردن پیام‌های فعلی
+    _messages.clear();
+    textController.clear();
+    scrollController.jumpTo(0);
+
+    _sortChatHistory();
+    notifyListeners();
+  }
+
   // ارسال پیام
   void sendMessage({VoidCallback? onNewBotMessage}) {
     final text = textController.text.trim();
     if (text.isEmpty || _isResponding) return;
 
-    // شروع چت جدید
-    if (_currentChatId == null || _messages.isEmpty) {
-      _startNewChat(text);
+    final userMessage = ChatMessage(text: text, isUser: true);
+    _messages.add(userMessage);
+
+    if (_currentChatId == null) {
+      startNewChat();
     }
 
-    // اضافه کردن پیام کاربر
-    _messages.add(ChatMessage(text: text, isUser: true));
+    final currentSession = _getCurrentChatSession()!;
+    currentSession.messages.add(userMessage);
+
     textController.clear();
 
-    // عنوان چت (فقط اولین پیام)
-    if (_messages.length == 1) {
-      final currentChat = _getCurrentChatSession();
-      if (currentChat != null) {
-        currentChat.title = text.length > 40
-            ? '${text.substring(0, 40)}...'
-            : text;
-      }
+    if (currentSession.messages.length == 1) {
+      currentSession.title = text.length > 40
+          ? '${text.substring(0, 40)}...'
+          : text;
     }
+
+    currentSession.lastUpdated = DateTime.now();
+    _sortChatHistory();
 
     notifyListeners();
     scrollToBottom();
@@ -95,16 +127,14 @@ class ChatProvider extends ChangeNotifier {
     _isResponding = true;
     Future.delayed(const Duration(milliseconds: 700), () {
       final response = _generateResponse(text);
-      _messages.add(ChatMessage(text: response, isUser: false));
+      final botMessage = ChatMessage(text: response, isUser: false);
+
+      _messages.add(botMessage);
+      currentSession.messages.add(botMessage);
+      currentSession.lastUpdated = DateTime.now();
+      _sortChatHistory();
+
       _isResponding = false;
-
-      // به‌روزرسانی زمان و مرتب‌سازی
-      final currentChat = _getCurrentChatSession();
-      if (currentChat != null) {
-        currentChat.lastUpdated = DateTime.now();
-        _sortChatHistory(); // مهم: بعد از پاسخ بات
-      }
-
       notifyListeners();
       scrollToBottom();
       onNewBotMessage?.call();
@@ -122,23 +152,24 @@ class ChatProvider extends ChangeNotifier {
       lastUpdated: DateTime.now(),
     );
 
-    _chatHistory.add(newChat); // اضافه به لیست
+    _chatHistory.add(newChat);
     _currentChatId = newChat.id;
     _messages.clear();
 
-    _sortChatHistory(); // مرتب‌سازی: پین‌شده‌ها بالا، جدیدترین اول
+    _sortChatHistory();
     notifyListeners();
   }
 
-  // بارگذاری چت
   void loadChat(String chatId) {
     final chat = _chatHistory.firstWhere(
       (c) => c.id == chatId,
       orElse: () => _chatHistory.first,
     );
+
     _currentChatId = chat.id;
     _messages.clear();
     _messages.addAll(chat.messages);
+
     notifyListeners();
     scrollToBottom();
   }

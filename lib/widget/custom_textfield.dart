@@ -5,11 +5,14 @@ class CustomTextField extends StatefulWidget {
   final String hintText;
   final String iconPath;
   final TextEditingController controller;
-  final bool isPassword; // فقط برای نمایش آیکون چشم
+  final bool isPassword;
   final FormFieldValidator<String>? validator;
-  final VoidCallback? onTap; // فقط برای فیلد
+  final VoidCallback? onTap;
   final bool readOnly;
-  final String? errorMessage;
+
+  // مهم: به جای ساختن ValueNotifier داخل constructor، از بیرون پاس بده
+  final ValueNotifier<String?> errorNotifier;
+
   const CustomTextField({
     super.key,
     required this.hintText,
@@ -19,7 +22,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.onTap,
     this.readOnly = false,
-    this.errorMessage,
+    required this.errorNotifier, // اجباری و بدون مشکل
   });
 
   @override
@@ -27,48 +30,49 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  bool _obscureText = true; // مقدار اولیه
-  late bool _showError;
-  String? _errorMessage;
-  final FocusNode _focusNode = FocusNode();
+  bool _obscureText = true;
+  late final FocusNode _focusNode;
+
   @override
   void initState() {
     super.initState();
     _obscureText = widget.isPassword;
-    _showError = false;
-    _errorMessage = null;
+    _focusNode = FocusNode();
 
-    // اضافه کن:
-    _focusNode.addListener(() {
-      setState(() {}); // وقتی فوکوس تغییر کرد، rebuild کن
-    });
+    // وقتی متن تغییر کرد یا فوکوس شد → rebuild + پاک کردن ارور
+    _focusNode.addListener(() => setState(() {}));
 
     widget.controller.addListener(() {
-      if (_showError) {
-        setState(() {
-          _showError = false;
-          _errorMessage = null;
-        });
+      if (widget.controller.text.isNotEmpty &&
+          widget.errorNotifier.value != null) {
+        widget.errorNotifier.value = null; // ارور خودکار پاک بشه
       }
+      setState(() {});
+    });
+
+    // وقتی errorNotifier تغییر کرد → rebuild
+    widget.errorNotifier.addListener(() {
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _focusNode.dispose(); // مهم!
+    _focusNode.dispose();
+    widget.errorNotifier.removeListener(() {}); // پاک کردن listener
     super.dispose();
   }
 
   void _toggleObscureText() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
+    setState(() => _obscureText = !_obscureText);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final hasError = widget.errorNotifier.value != null;
     final hasText = widget.controller.text.isNotEmpty;
+    final isFocused = _focusNode.hasFocus;
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,19 +80,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
         const SizedBox(height: 6),
 
         SizedBox(
-          height: 50,
+          height: 56,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 250),
             decoration: BoxDecoration(
               color: const Color.fromARGB(178, 237, 242, 250),
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
-                color: widget.errorMessage != null
+                color: hasError
                     ? Colors.red
-                    : (_focusNode.hasFocus || hasText || isKeyboardOpen)
+                    : (isFocused || hasText || isKeyboardOpen)
                     ? const Color.fromRGBO(93, 63, 211, 1)
                     : Colors.grey.withOpacity(0.3),
-                width: widget.errorMessage != null ? 1.5 : 1.0,
+                width: hasError ? 2.0 : 1.2,
               ),
             ),
             child: ClipRRect(
@@ -99,69 +103,70 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 obscureText: _obscureText,
                 readOnly: widget.readOnly,
                 onTap: widget.onTap,
+                validator: widget.validator,
                 decoration: InputDecoration(
-                  prefixIcon: Image.asset(
-                    widget.iconPath,
-                    width: 25,
-                    height: 25,
-                    color: const Color.fromRGBO(93, 63, 211, 1),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Image.asset(
+                      widget.iconPath,
+                      width: 24,
+                      height: 24,
+                      color: const Color.fromRGBO(93, 63, 211, 1),
+                    ),
                   ),
                   suffixIcon: widget.isPassword
                       ? GestureDetector(
                           onTap: _toggleObscureText,
                           child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Image.asset(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
                               _obscureText
-                                  ? 'assets/icons/eyeclosed.png'
-                                  : 'assets/icons/eye.png',
-                              width: 24,
-                              height: 24,
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey[600],
                             ),
                           ),
                         )
                       : null,
-                  border: InputBorder.none, // این را نگه دارید
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                   hintText: widget.hintText,
-                  hintStyle: const TextStyle(
-                    color: Color.fromRGBO(170, 170, 170, 0.984),
-                    fontSize: 16,
-                  ),
+                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
                   contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 4,
+                    vertical: 18,
+                    horizontal: 8,
                   ),
-                  errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
-                  // این دو تا رو هم اضافه کن (برای بوردر قرمز)
-                  errorBorder: InputBorder.none,
-                  focusedErrorBorder: InputBorder.none,
-
-                  // این‌ها را اضافه کنید:
-                  focusedBorder: InputBorder.none, // مهم!
-                  enabledBorder: InputBorder.none, // مهم!
                 ),
                 style: const TextStyle(fontSize: 16),
-                validator: widget.validator,
               ),
             ),
           ),
         ),
 
         // پیام خطا
-        // پیام خطا
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          height: widget.errorMessage != null ? 20 : 0,
-          padding: widget.errorMessage != null
-              ? const EdgeInsets.only(left: 16, top: 4)
-              : EdgeInsets.zero,
-          child: widget.errorMessage != null
-              ? Text(
-                  widget.errorMessage!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
-                  key: ValueKey(widget.errorMessage),
-                )
-              : null,
+        ValueListenableBuilder<String?>(
+          valueListenable: widget.errorNotifier,
+          builder: (context, error, _) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              height: error != null ? 28 : 0,
+              padding: error != null
+                  ? const EdgeInsets.only(left: 16, top: 6)
+                  : EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              child: error != null
+                  ? Text(
+                      error,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            );
+          },
         ),
       ],
     );

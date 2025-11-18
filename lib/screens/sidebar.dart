@@ -102,7 +102,6 @@ class _AppSidebarState extends State<AppSidebar> {
               ],
             ),
           ),
-          // عنوان + جستجو
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Row(
@@ -134,7 +133,9 @@ class _AppSidebarState extends State<AppSidebar> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    physics: const ClampingScrollPhysics(), // مهم!
+                    clipBehavior: Clip.antiAlias,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
                     itemCount: filteredHistory.length,
                     itemBuilder: (context, index) {
                       final chat = filteredHistory[index];
@@ -142,7 +143,7 @@ class _AppSidebarState extends State<AppSidebar> {
 
                       return Container(
                         margin: const EdgeInsets.symmetric(
-                          vertical: 4,
+                          vertical: 1,
                           horizontal: 5,
                         ),
                         decoration: BoxDecoration(
@@ -150,28 +151,55 @@ class _AppSidebarState extends State<AppSidebar> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: ListTile(
+                          enableFeedback: false,
+                          selectedTileColor: const Color.fromARGB(
+                            255,
+                            160,
+                            160,
+                            160,
+                          ),
+                          selected: chatProvider.currentChatId == chat.id,
+                          tileColor: const Color.fromARGB(
+                            221,
+                            255,
+                            255,
+                            255,
+                          ), // رنگ پس‌زمینه
+                          shape: RoundedRectangleBorder(
+                            // مهم: گوشه‌ها گرد بشه
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           contentPadding: const EdgeInsets.fromLTRB(
                             16,
-                            8,
-                            8,
-                            8,
+                            1,
+                            1,
+                            1,
                           ),
-                          leading: isPinned
-                              ? Icon(
-                                  Icons.push_pin,
-                                  size: 16,
-                                  color: const Color.fromARGB(255, 0, 0, 0),
-                                )
-                              : null,
-                          title: Text(
-                            chat.title,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          title: Row(
+                            children: [
+                              if (isPinned)
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Icon(
+                                    Icons.push_pin,
+                                    size: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              Expanded(
+                                child: Text(
+                                  chat.title,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
+
                           subtitle: Text(
                             "6 hours ago",
                             style: TextStyle(
@@ -277,6 +305,8 @@ class _AppSidebarState extends State<AppSidebar> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        elevation: 5,
+        backgroundColor: Colors.white,
         title: const Text("Rename Chat"),
         content: TextField(
           controller: controller,
@@ -288,13 +318,16 @@ class _AppSidebarState extends State<AppSidebar> {
             child: const Text("Cancel"),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromRGBO(93, 63, 211, 1),
+            ),
             onPressed: () {
               if (controller.text.trim().isNotEmpty) {
                 provider.renameChat(chat.id, controller.text.trim());
               }
               Navigator.pop(ctx);
             },
-            child: const Text("Save"),
+            child: const Text("Save", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -306,6 +339,7 @@ class _AppSidebarState extends State<AppSidebar> {
     return await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
+            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
             title: const Text("Delete Chat"),
             content: const Text("Are you sure you want to delete this chat?"),
             actions: [
@@ -314,7 +348,9 @@ class _AppSidebarState extends State<AppSidebar> {
                 child: const Text("Cancel"),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 236, 103, 94),
+                ),
                 onPressed: () => Navigator.pop(ctx, true),
                 child: const Text(
                   "Delete",

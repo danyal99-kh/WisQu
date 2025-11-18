@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/screens/getstarted_screens.dart';
 import 'package:wisqu/screens/sidebar.dart';
+import 'package:wisqu/state/auth_provider.dart';
 import '../../state/chat_provider.dart';
 import 'package:wisqu/screens/settings_modal.dart';
 
@@ -20,7 +21,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final ValueNotifier<bool> isTyping = ValueNotifier(false);
   final ValueNotifier<int?> _selectedMessageIndex = ValueNotifier(null);
   late final AnimationController _messageAnimController;
-  final GlobalKey _settingsButtonKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
@@ -424,51 +424,100 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                                     Row(
                                       children: [
-                                        IconButton(
-                                          key: _settingsButtonKey,
-                                          icon: Image.asset(
-                                            "assets/icons/settings.png",
-                                            width: 20,
-                                            height: 20,
-                                          ),
-                                          onPressed: () =>
-                                              showSettingsPopup(context),
-                                        ),
-                                        ConstrainedBox(
-                                          constraints: const BoxConstraints(
-                                            minWidth: 80,
-                                            maxWidth: 130,
-                                          ),
-                                          child: ElevatedButton(
-                                            onPressed: () =>
-                                                showLoginDialog(context),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(
-                                                0xFF5D3FD3,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 8,
+                                        Consumer<AuthProvider>(
+                                          builder: (context, authProvider, child) {
+                                            // اگر لاگین نکرده → Settings + Get Started
+                                            // اگر لاگین کرده → فقط New Chat (Settings حذف بشه)
+                                            if (!authProvider.isLoggedIn) {
+                                              return Row(
+                                                children: [
+                                                  IconButton(
+                                                    icon: Image.asset(
+                                                      "assets/icons/settings.png",
+                                                      width: 20,
+                                                      height: 20,
+                                                    ),
+                                                    onPressed: () =>
+                                                        showSettingsPopup(
+                                                          context,
+                                                        ),
                                                   ),
-                                              minimumSize: const Size(0, 35),
-                                            ),
-                                            child: const FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Text(
-                                                "Get Started",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
+                                                  const SizedBox(width: 8),
+                                                  ConstrainedBox(
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                          minWidth: 80,
+                                                          maxWidth: 130,
+                                                        ),
+                                                    child: ElevatedButton(
+                                                      onPressed: () =>
+                                                          showLoginDialog(
+                                                            context,
+                                                          ),
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor:
+                                                            const Color(
+                                                              0xFF5D3FD3,
+                                                            ),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                20,
+                                                              ),
+                                                        ),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 10,
+                                                              vertical: 8,
+                                                            ),
+                                                        minimumSize: const Size(
+                                                          0,
+                                                          35,
+                                                        ),
+                                                      ),
+                                                      child: const FittedBox(
+                                                        fit: BoxFit.scaleDown,
+                                                        child: Text(
+                                                          "Get Started",
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                          maxLines: 1,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            } else {
+                                              // فقط New Chat وقتی لاگین شده
+                                              return IconButton(
+                                                icon: Image.asset(
+                                                  "assets/icons/newchat.png",
+                                                  width: 25,
+                                                  height: 25,
                                                 ),
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                          ),
+                                                onPressed: () {
+                                                  final chatProvider =
+                                                      Provider.of<ChatProvider>(
+                                                        context,
+                                                        listen: false,
+                                                      );
+                                                  chatProvider.startNewChat();
+                                                  showWelcomeText.value = true;
+                                                  _selectedMessageIndex.value =
+                                                      null;
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).unfocus();
+                                                  _messageAnimController
+                                                      .reset();
+                                                },
+                                              );
+                                            }
+                                          },
                                         ),
                                       ],
                                     ),
