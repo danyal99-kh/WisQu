@@ -70,8 +70,8 @@ class _AppSidebarState extends State<AppSidebar> {
                 // آواتار کاربر
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: const AssetImage('assets/user_avatar.png'),
-                  backgroundColor: const Color.fromARGB(255, 131, 131, 131),
+                  backgroundColor: const Color.fromARGB(255, 223, 222, 222),
+                  child: SvgPicture.asset("assets/icons/logo.svg", height: 28),
                 ),
 
                 const SizedBox(width: 8),
@@ -279,83 +279,21 @@ class _AppSidebarState extends State<AppSidebar> {
                               color: Colors.grey[600],
                             ),
                           ),
-                          trailing: PopupMenuButton<String>(
-                            color: Colors.white,
+                          trailing: IconButton(
+                            // تغییر جدید: به جای PopupMenuButton، IconButton برای باز کردن BottomSheet
                             icon: SvgPicture.asset(
                               "assets/icons/3.svg",
                               width: 18,
                               height: 18,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            onSelected: (value) async {
-                              if (value == 'rename') {
-                                _showRenameDialog(context, chat, chatProvider);
-                              } else if (value == 'pin' || value == 'unpin') {
-                                chatProvider.togglePinChat(chat.id);
-                              } else if (value == 'delete') {
-                                final confirmed = await _showDeleteDialog(
-                                  context,
-                                );
-                                if (confirmed) {
-                                  chatProvider.deleteChat(chat.id);
-                                }
-                              }
+                            onPressed: () {
+                              _showBottomMenu(
+                                context,
+                                chat,
+                                chatProvider,
+                                isPinned,
+                              ); // تغییر جدید: فراخوانی BottomSheet
                             },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'rename',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.edit,
-                                      size: 18,
-                                      color: Colors.grey[700],
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Text("Rename"),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: isPinned ? 'unpin' : 'pin',
-                                child: Row(
-                                  children: [
-                                    isPinned
-                                        ? SvgPicture.asset(
-                                            "assets/icons/pin2.svg",
-                                            width: 22,
-                                            height: 22,
-                                          )
-                                        : SvgPicture.asset(
-                                            "assets/icons/pin1.svg",
-                                            width: 22,
-                                            height: 22,
-                                          ),
-                                    const SizedBox(width: 8),
-                                    Text(isPinned ? "Unpin" : "Pin"),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.delete_outline,
-                                      size: 18,
-                                      color: Colors.red[600],
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Delete",
-                                      style: TextStyle(color: Colors.red[600]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
                           ),
                           onTap: () {
                             chatProvider.loadChat(chat.id);
@@ -368,6 +306,111 @@ class _AppSidebarState extends State<AppSidebar> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showBottomMenu(
+    BuildContext context,
+    ChatSession chat,
+    ChatProvider provider,
+    bool isPinned,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.08),
+              border: Border.all(color: const Color(0xFFD1D5DB), width: 0.8),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 40),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      top: 5,
+                      bottom: 16,
+                    ), // فاصله از بالا
+                    width: 58, // طول خط
+                    height: 5, // ضخامت خط
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300], // در تم روشن
+                      // color: Colors.grey[600], // در تم تاریک
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+                _buildMenuItem(
+                  iconSvgPath: "assets/icons/pen1.svg",
+                  title: "Rename",
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showRenameDialog(context, chat, provider);
+                  },
+                ),
+                const SizedBox(height: 5),
+                _buildMenuItem(
+                  iconSvgPath: isPinned
+                      ? "assets/icons/pin2.svg"
+                      : "assets/icons/pin1.svg",
+                  title: isPinned ? "Unpin" : "Pin",
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    provider.togglePinChat(chat.id);
+                  },
+                ),
+                const SizedBox(height: 5),
+                _buildMenuItem(
+                  iconSvgPath: "assets/icons/delete.svg",
+                  title: "Delete",
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    final confirmed = await _showDeleteDialog(context);
+                    if (confirmed) provider.deleteChat(chat.id);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // متد کمکی برای جلوگیری از تکرار کد
+  Widget _buildMenuItem({
+    IconData? icon,
+    Widget? iconWidget,
+    String? iconSvgPath,
+    required String title,
+    Color? titleColor,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: iconSvgPath != null
+          ? SvgPicture.asset(iconSvgPath, width: 22, height: 22)
+          : icon != null
+          ? Icon(icon, size: 22)
+          : const SizedBox(width: 22, height: 22), // fallback
+      title: Text(
+        title,
+        style: TextStyle(color: titleColor ?? Colors.black87, fontSize: 15),
+      ),
+      onTap: onTap,
     );
   }
 
