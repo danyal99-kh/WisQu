@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/state/auth_provider.dart';
 import 'package:wisqu/state/chat_provider.dart';
@@ -180,7 +181,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       CustomTextField(
                         controller: _passwordController,
                         hintText: 'Enter your password',
-                        iconPath: 'assets/icons/lock.png',
+                        icon: SvgPicture.asset(
+                          "assets/icons/lock.svg",
+                          width: 24,
+                          height: 24,
+                        ),
                         isPassword: true,
                         errorNotifier: ValueNotifier<String?>(
                           null,
@@ -292,7 +297,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       CustomTextField(
                         controller: _confirmPasswordController,
                         hintText: 'Confirm your password',
-                        iconPath: 'assets/icons/lock.png',
+                        icon: SvgPicture.asset(
+                          "assets/icons/lock.svg",
+                          width: 24,
+                          height: 24,
+                        ),
                         isPassword: true,
                         errorNotifier: _confirmPasswordError, // این مهمه!
                       ),

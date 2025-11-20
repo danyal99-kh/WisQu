@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/screens/ResetPasword.dart';
 import 'package:wisqu/screens/home_screen.dart';
@@ -12,21 +13,21 @@ class PasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginPage();
+    return PasswordLoginPage();
   }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class PasswordLoginPage extends StatefulWidget {
+  const PasswordLoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<PasswordLoginPage> createState() => _PasswordLoginPageState();
 }
 
 bool _showError = false;
 String _errorMessage = '';
 
-class _LoginPageState extends State<LoginPage>
+class _PasswordLoginPageState extends State<PasswordLoginPage>
     with SingleTickerProviderStateMixin {
   late final TextEditingController _passwordController;
   late final TextEditingController _confirmPasswordController;
@@ -175,7 +176,11 @@ class _LoginPageState extends State<LoginPage>
                     CustomTextField(
                       controller: _passwordController,
                       hintText: "Enter your password",
-                      iconPath: "assets/icons/lock.png",
+                      icon: SvgPicture.asset(
+                        "assets/icons/lock.svg",
+                        width: 24,
+                        height: 24,
+                      ),
                       isPassword: true,
                       errorNotifier: _passwordError, // این مهمه!
                     ),

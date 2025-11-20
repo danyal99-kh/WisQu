@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:wisqu/screens/getstarted_screens.dart';
 import 'package:wisqu/screens/sidebar.dart';
 import 'package:wisqu/state/auth_provider.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import '../../state/chat_provider.dart';
 import 'package:wisqu/screens/settings_modal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       drawer: const AppSidebar(),
 
       extendBodyBehindAppBar: true,
-      backgroundColor: const Color(0xFFF6F7FA),
+      backgroundColor: context.colors.background,
 
       body: Stack(
         children: [
@@ -116,18 +117,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                     decoration: BoxDecoration(
                                       color: message.isUser
-                                          ? const Color.fromRGBO(
-                                              255,
-                                              255,
-                                              253,
-                                              1,
-                                            )
-                                          : const Color.fromARGB(
-                                              255,
-                                              246,
-                                              247,
-                                              251,
-                                            ),
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.surface
+                                          : context.colors.inputField,
                                       borderRadius: BorderRadius.only(
                                         topLeft: const Radius.circular(16),
                                         topRight: const Radius.circular(16),
@@ -138,12 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       ),
                                       border: message.isUser
                                           ? Border.all(
-                                              color: const Color.fromARGB(
-                                                255,
-                                                129,
-                                                129,
-                                                129,
-                                              ).withOpacity(0.3),
+                                              color: context.colors.separator,
                                               width: 1.0,
                                             )
                                           : null,
@@ -151,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     child: Text(
                                       message.text,
                                       style: TextStyle(
-                                        color: Colors.black87,
+                                        color: context.colors.textIcon,
                                         fontFamily: "opensans",
                                         fontWeight: FontWeight.w400,
                                       ),
@@ -326,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 'WisQu\nHello, What can I help \nyou with?',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: const Color.fromARGB(255, 72, 72, 72),
+                                  color: context.colors.textIcon,
                                   fontSize: screenWidth * 0.05,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -350,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   kToolbarHeight +
                                   MediaQuery.of(context).padding.top +
                                   8,
-                              color: Colors.white.withOpacity(0.15),
+                              color: context.colors.popupBackground,
                               padding: const EdgeInsets.only(
                                 top: 18,
                                 left: 12,
@@ -374,6 +362,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             "assets/icons/settings.svg",
                                             width: 22,
                                             height: 22,
+                                            colorFilter: ColorFilter.mode(
+                                              context.colors.primary,
+                                              BlendMode.srcIn,
+                                            ),
                                           ),
                                           onPressed: () =>
                                               showSettingsPopup(context),
@@ -384,9 +376,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           onPressed: () =>
                                               showLoginDialog(context),
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFF5D3FD3,
-                                            ),
+                                            backgroundColor: Theme.of(
+                                              context,
+                                            ).primaryColor,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(20),
@@ -396,10 +388,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               vertical: 10,
                                             ),
                                           ),
-                                          child: const Text(
+                                          child: Text(
                                             "Get Started",
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: context.colors.buttonText,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -416,6 +408,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             "assets/icons/sidbar.svg",
                                             width: 20,
                                             height: 20,
+                                            colorFilter: ColorFilter.mode(
+                                              context.colors.textIcon,
+                                              BlendMode.srcIn,
+                                            ),
                                           ),
                                           onPressed: () => _scaffoldKey
                                               .currentState
@@ -437,15 +433,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             ),
                                           ),
                                           const SizedBox(width: 10),
-                                          const Text(
+                                          Text(
                                             "WisQu",
                                             style: TextStyle(
-                                              color: Color.fromARGB(
-                                                255,
-                                                72,
-                                                72,
-                                                72,
-                                              ),
+                                              color: context.colors.textIcon,
                                               fontSize: 21,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -482,10 +473,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                         horizontal: 8,
                                                         vertical: 8,
                                                       ),
-                                                  side: const BorderSide(
-                                                    color: Color(
-                                                      0xFFE5E7EB,
-                                                    ), // #E5E7EB
+                                                  side: BorderSide(
+                                                    color: context
+                                                        .colors
+                                                        .separator, // #E5E7EB
                                                     width: 2,
                                                   ),
                                                   shape: RoundedRectangleBorder(
@@ -494,7 +485,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                           18,
                                                         ), // گرد کامل برای ارتفاع 36
                                                   ),
-                                                  backgroundColor: Colors.white,
+                                                  backgroundColor:
+                                                      context.colors.background,
                                                   elevation: 0,
                                                   minimumSize: const Size(
                                                     36,
@@ -511,15 +503,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                       "assets/icons/share.svg",
                                                       width: 18,
                                                       height: 18,
+                                                      colorFilter:
+                                                          ColorFilter.mode(
+                                                            context
+                                                                .colors
+                                                                .textIcon,
+                                                            BlendMode.srcIn,
+                                                          ),
                                                     ),
 
                                                     const SizedBox(
                                                       width: 8,
                                                     ), // gap: 8px
-                                                    const Text(
+                                                    Text(
                                                       "Share",
                                                       style: TextStyle(
-                                                        color: Colors.black87,
+                                                        color: context
+                                                            .colors
+                                                            .textIcon,
                                                         fontSize: 13,
                                                         fontWeight:
                                                             FontWeight.w500,
@@ -537,6 +538,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 "assets/icons/settings.svg",
                                                 width: 20,
                                                 height: 20,
+                                                colorFilter: ColorFilter.mode(
+                                                  context.colors.textIcon,
+                                                  BlendMode.srcIn,
+                                                ),
                                               ),
                                               onPressed: () =>
                                                   showSettingsPopup(context),
@@ -546,9 +551,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               onPressed: () =>
                                                   showLoginDialog(context),
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: const Color(
-                                                  0xFF5D3FD3,
-                                                ),
+                                                backgroundColor: Theme.of(
+                                                  context,
+                                                ).primaryColor,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(20),
@@ -559,10 +564,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                       vertical: 10,
                                                     ),
                                               ),
-                                              child: const Text(
+                                              child: Text(
                                                 "Get Started",
                                                 style: TextStyle(
-                                                  color: Colors.white,
+                                                  color:
+                                                      context.colors.buttonText,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
@@ -604,16 +610,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: const Color.fromARGB(
-                      209,
-                      237,
-                      242,
-                      250,
-                    ), // #EDF2FAB2
-                    boxShadow: const [
+                    color: context.colors.inputField, // #EDF2FAB2
+                    boxShadow: [
                       BoxShadow(
-                        color: Color(0x14000000),
-                        offset: Offset(0, 4),
+                        color: context.colors.textIcon.withOpacity(0.08),
+                        offset: const Offset(0, 4),
                         blurRadius: 8,
                       ),
                     ],
@@ -644,17 +645,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     },
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: typing
-                                          ? Colors.black87
-                                          : const Color(0xFF8D8D8D),
+                                      color: context.colors.textIcon,
                                       height: 1.4,
                                     ),
                                     decoration: InputDecoration(
                                       isDense: true,
                                       hintText: "What do you want to know?",
-                                      hintStyle: const TextStyle(
+                                      hintStyle: TextStyle(
                                         fontSize: 16,
-                                        color: Color(0xFF8D8D8D),
+                                        color: context.colors.hintText,
                                       ),
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.zero,
@@ -672,26 +671,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               child: Container(
                                 width: 36,
                                 height: 36,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
+                                decoration: BoxDecoration(
+                                  color: context.colors.background,
                                   shape: BoxShape.circle,
-                                  border: Border(
-                                    top: BorderSide(
-                                      color: Color(0xFFCECECE),
-                                      width: 1,
-                                    ),
-                                    left: BorderSide(
-                                      color: Color(0xFFCECECE),
-                                      width: 1,
-                                    ),
-                                    right: BorderSide(
-                                      color: Color(0xFFCECECE),
-                                      width: 1,
-                                    ),
-                                    bottom: BorderSide(
-                                      color: Color(0xFFCECECE),
-                                      width: 1,
-                                    ),
+                                  border: Border.all(
+                                    color: context.colors.separator,
+                                    width: 1,
                                   ),
                                 ),
                                 child: IconButton(
@@ -700,6 +685,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     "assets/icons/Send.svg",
                                     width: 20,
                                     height: 20,
+                                    colorFilter: ColorFilter.mode(
+                                      context.colors.primary,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                   onPressed: () {
                                     _selectedMessageIndex.value = null;
@@ -736,7 +725,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontFamily: 'OpenSans',
                         fontWeight: FontWeight.w300,
-                        color: Colors.grey[600],
+                        color: context.colors.hintText,
                         fontSize: 12,
                       ),
                     ),
@@ -762,13 +751,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onTapUp: (_) => setState(() {}),
         child: IconButton(
           icon: ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Color.fromARGB(255, 121, 121, 121), // همه آیکون‌ها این رنگ
+            colorFilter: ColorFilter.mode(
+              context.colors.textIcon, // همه آیکون‌ها این رنگ
               BlendMode.srcIn,
             ),
             child: icon,
           ),
-          onPressed: () {},
+          onPressed: onPressed,
         ),
       ),
     );
@@ -791,10 +780,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           "assets/icons/newchat.svg",
           width: 20,
           height: 20,
-          // colorFilter: const ColorFilter.mode(
-          //   Color(0xFF374151),
-          //   BlendMode.srcIn,
-          // ),
+          colorFilter: ColorFilter.mode(
+            context.colors.textIcon,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );

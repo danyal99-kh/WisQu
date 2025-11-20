@@ -1,10 +1,14 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/state/auth_provider.dart';
 import 'package:wisqu/state/chat_provider.dart';
-import 'screens/splash_screen.dart';
+import 'package:wisqu/state/theme_provider.dart';
+import 'package:wisqu/screens/splash_screen.dart';
+import 'package:wisqu/theme/app_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -15,41 +19,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: MaterialApp(
-        theme: ThemeData(
-          useMaterial3: true,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Wisqu',
 
-          fontFamily: 'OpenSans',
+            // کنترل تم
+            themeMode: themeProvider.themeMode,
 
-          // اگر کاراکتر فارسی بود → Estedad
-          fontFamilyFallback: const ['Estedad'],
+            // ⭐ استفاده از AppTheme 
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
 
-          // همه استایل‌های متنی بولد باشن
-          textTheme: const TextTheme(
-            displayLarge: TextStyle(fontWeight: FontWeight.w600),
-            displayMedium: TextStyle(fontWeight: FontWeight.w600),
-            displaySmall: TextStyle(fontWeight: FontWeight.w600),
-            headlineLarge: TextStyle(fontWeight: FontWeight.w600),
-            headlineMedium: TextStyle(fontWeight: FontWeight.w600),
-            headlineSmall: TextStyle(fontWeight: FontWeight.w600),
-            titleLarge: TextStyle(fontWeight: FontWeight.w600),
-            titleMedium: TextStyle(fontWeight: FontWeight.w600),
-            titleSmall: TextStyle(fontWeight: FontWeight.w600),
-            bodyLarge: TextStyle(fontWeight: FontWeight.w600),
-            bodyMedium: TextStyle(fontWeight: FontWeight.w600),
-            bodySmall: TextStyle(fontWeight: FontWeight.w600),
-            labelLarge: TextStyle(fontWeight: FontWeight.w600),
-            labelMedium: TextStyle(fontWeight: FontWeight.w600),
-            labelSmall: TextStyle(fontWeight: FontWeight.w600),
-          ).apply(fontFamily: 'OpenSans'),
-        ),
-        debugShowCheckedModeBanner: false,
-        title: 'Chat Bot',
-
-        home: const SplashScreen(),
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
   }

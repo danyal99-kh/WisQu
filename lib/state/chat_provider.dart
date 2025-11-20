@@ -162,7 +162,6 @@ class ChatProvider extends ChangeNotifier {
 
     notifyListeners();
 
-    // اسکرول به پایین بعد از لود چت
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToBottom(force: true);
     });
@@ -191,7 +190,7 @@ class ChatProvider extends ChangeNotifier {
       if (_chatHistory.isNotEmpty) {
         loadChat(_chatHistory.first.id);
       } else {
-        startNewChat(); // اگر آخرین چت حذف شد → چت جدید بساز
+        startNewChat();
       }
     }
 
@@ -203,7 +202,7 @@ class ChatProvider extends ChangeNotifier {
     _messages.clear();
     _currentChatId = null;
     textController.clear();
-    startNewChat(); // یه چت خالی جدید
+    startNewChat();
     notifyListeners();
   }
 

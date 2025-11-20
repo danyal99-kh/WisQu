@@ -1,9 +1,9 @@
-// lib/widgets/custom_text_field.dart
 import 'package:flutter/material.dart';
+import 'package:wisqu/theme/app_theme.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hintText;
-  final String iconPath;
+  final Widget icon;
   final TextEditingController controller;
   final bool isPassword;
   final FormFieldValidator<String>? validator;
@@ -16,7 +16,7 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
     required this.hintText,
-    required this.iconPath,
+    required this.icon,
     required this.controller,
     this.isPassword = false,
     this.validator,
@@ -84,7 +84,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(178, 237, 242, 250),
+              color: context.colors.inputField,
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
                 color: hasError
@@ -107,13 +107,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 decoration: InputDecoration(
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(14),
-                    child: Image.asset(
-                      widget.iconPath,
-                      width: 24,
-                      height: 24,
-                      color: const Color.fromRGBO(93, 63, 211, 1),
-                    ),
+                    child: widget.icon,
                   ),
+
                   suffixIcon: widget.isPassword
                       ? GestureDetector(
                           onTap: _toggleObscureText,

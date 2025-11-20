@@ -3,10 +3,12 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import 'package:wisqu/widget/custom_button.dart';
 import 'continue_with_email_screen.dart';
 
 void showLoginDialog(BuildContext context) {
+  final colors = context.colors;
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -33,18 +35,18 @@ void showLoginDialog(BuildContext context) {
                 ),
                 decoration: BoxDecoration(
                   // Glassmorphism
-                  color: Colors.white.withOpacity(0.1), // شفافیت شیشه‌ای
+                  color: colors.popupBackground.withOpacity(
+                    0.1,
+                  ), // شفافیت شیشه‌ای
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.3), // حاشیه سفید مات
+                    color: colors.separator.withOpacity(0.3), // حاشیه سفید مات
                     width: 1.2,
                   ),
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    ],
-                  ),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: []),
                 ),
               ),
             ),
@@ -68,13 +70,15 @@ void showLoginDialog(BuildContext context) {
                               vertical: 25,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.8), // ← شفاف!
+                              color: colors.background.withOpacity(
+                                0.8,
+                              ), // ← شفاف!
                               image: const DecorationImage(
                                 image: AssetImage("assets/gradient.png"),
                                 fit: BoxFit.cover,
                               ),
                               border: Border.all(
-                                color: Color.fromRGBO(147, 147, 147, 1),
+                                color: colors.separator,
                                 width: 2.5,
                               ),
                               borderRadius: BorderRadius.circular(30),
@@ -89,6 +93,7 @@ void showLoginDialog(BuildContext context) {
                                     icon: Image.asset(
                                       "assets/icons/minimize.png",
                                       height: 20,
+                                      color: colors.textIcon,
                                     ),
                                   ),
                                 ),
@@ -96,20 +101,15 @@ void showLoginDialog(BuildContext context) {
                                   height: constraints.maxHeight * 0.12,
                                   child: Image.asset(
                                     "assets/logo.png",
-                                    color: const Color.fromARGB(
-                                      255,
-                                      88,
-                                      88,
-                                      88,
-                                    ),
+                                    color: colors.textIcon,
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                const Text(
+                                Text(
                                   "Sign Up to Continue With \n WisQu",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: Color.fromARGB(255, 88, 88, 88),
+                                    color: colors.textIcon,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -121,21 +121,19 @@ void showLoginDialog(BuildContext context) {
                                     "assets/google-logo.png",
                                     height: 24,
                                   ),
-                                  label: const Text("Continue with Google"),
+                                  label: Text(
+                                    "Continue with Google",
+                                    style: TextStyle(color: colors.textIcon),
+                                  ),
                                   style: ElevatedButton.styleFrom(
                                     elevation: 0,
-                                    backgroundColor: const Color.fromRGBO(
-                                      218,
-                                      218,
-                                      223,
-                                      1,
-                                    ),
-                                    foregroundColor: Colors.black,
+                                    backgroundColor: colors.inputField,
+                                    foregroundColor: colors.textIcon,
                                     minimumSize: const Size(
                                       double.infinity,
                                       37,
                                     ),
-                                    side: const BorderSide(color: Colors.grey),
+                                    side: BorderSide(color: colors.separator),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),

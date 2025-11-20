@@ -1,5 +1,6 @@
 // lib/widgets/button.dart
 import 'package:flutter/material.dart';
+import 'package:wisqu/theme/app_theme.dart';
 
 class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -22,8 +23,7 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-            backgroundColor ?? const Color.fromRGBO(93, 63, 211, 1),
+        backgroundColor: backgroundColor ?? context.colors.primary,
         minimumSize: const Size(double.infinity, _buttonHeight),
         maximumSize: const Size(double.infinity, _buttonHeight),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
