@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import '../state/chat_provider.dart';
 import 'dart:ui'; // برای ImageFilter.blur
 
@@ -53,7 +54,8 @@ class _AppSidebarState extends State<AppSidebar> {
 
     return Drawer(
       width: screenWidth * 1,
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.background,
+
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(0),
@@ -63,7 +65,8 @@ class _AppSidebarState extends State<AppSidebar> {
       child: Column(
         children: [
           Container(
-            color: const Color.fromARGB(255, 251, 251, 251),
+            color: context.colors.sidebarHeaderBackground,
+
             padding: const EdgeInsets.fromLTRB(16, 50, 16, 16),
             child: Row(
               children: [
@@ -106,12 +109,12 @@ class _AppSidebarState extends State<AppSidebar> {
                           padding: EdgeInsets.zero,
                           decoration: BoxDecoration(
                             color: _isFocused
-                                ? const Color(0xB2EDF2FA)
-                                : const Color.fromARGB(53, 219, 219, 219),
+                                ? context.colors.searchBoxBackground
+                                : context.colors.searchBoxFocusedBackground,
                             borderRadius: BorderRadius.circular(18),
                             border: _isFocused
                                 ? Border.all(
-                                    color: const Color(0xFFD1D5DB),
+                                    color: context.colors.separator,
                                     width: 1,
                                   )
                                 : null,
@@ -128,7 +131,8 @@ class _AppSidebarState extends State<AppSidebar> {
                             decoration: InputDecoration(
                               hintText: "Search History",
                               hintStyle: TextStyle(
-                                color: Colors.grey[500],
+                                color: context.colors.hintText,
+
                                 fontSize: 14,
                               ),
                               prefixIcon: Padding(
@@ -194,7 +198,7 @@ class _AppSidebarState extends State<AppSidebar> {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
-                    color: Colors.grey[800],
+                    color: context.colors.hintText,
                   ),
                 ),
               ],
@@ -209,7 +213,7 @@ class _AppSidebarState extends State<AppSidebar> {
                       _searchQuery.isEmpty
                           ? "No chat history yet"
                           : "No results found",
-                      style: TextStyle(color: Colors.grey[500]),
+                      style: TextStyle(color: context.colors.hintText),
                     ),
                   )
                 : ListView.builder(
@@ -227,7 +231,8 @@ class _AppSidebarState extends State<AppSidebar> {
                           horizontal: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(221, 255, 255, 255),
+                          color: context.colors.background,
+
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: ListTile(
@@ -276,7 +281,7 @@ class _AppSidebarState extends State<AppSidebar> {
                             "6 hours ago",
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: context.colors.hintText,
                             ),
                           ),
                           trailing: IconButton(

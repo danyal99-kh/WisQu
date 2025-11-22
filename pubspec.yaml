@@ -15,6 +15,7 @@ dependencies:
   frosted_glass_effect: ^0.0.2
   glassmorphism: ^3.0.0
   flutter_svg: ^2.2.2
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

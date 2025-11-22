@@ -62,6 +62,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     required this.background,
     required this.inputField,
     required this.popupBackground,
+    required this.searchBoxFocusedBackground,
     required this.textIcon,
     required this.buttonText,
     required this.separator,
@@ -71,12 +72,15 @@ class CustomColors extends ThemeExtension<CustomColors> {
     required this.error,
     required this.textFieldFill, // رنگ جدید اضافه شد
     required this.cornerRadius,
+    required this.sidebarHeaderBackground,
+    required this.searchBoxBackground,
   });
 
   final Color primary;
   final Color accent;
   final Color background;
   final Color inputField;
+  final Color searchBoxFocusedBackground;
   final Color popupBackground;
   final Color textIcon;
   final Color buttonText;
@@ -84,8 +88,9 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color separator2;
   final Color hintText;
   final Color success;
+  final Color searchBoxBackground;
   final Color error;
-
+  final Color sidebarHeaderBackground;
   // رنگ جدید: پس‌زمینه فیلد متنی
   final Color textFieldFill;
 
@@ -96,6 +101,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     primary: Color(0xFF5D3DF3),
     accent: Color(0xFFFF69B4),
     background: Color(0xFFF6F7FA),
+    searchBoxFocusedBackground: Color(0xB2EDF2FA),
     inputField: Color(0xB3EDF2FA),
     popupBackground: Color(0x4DFFFFFF),
     textIcon: Color(0xFF404040),
@@ -104,14 +110,18 @@ class CustomColors extends ThemeExtension<CustomColors> {
     separator2: Color(0xFFD1D5DB),
     hintText: Color(0xFF828282),
     success: Color(0xFF2ECC71),
+    searchBoxBackground: Color(0x4DFFFFFE),
     error: Color(0xFFE74C3C),
-    textFieldFill: Color(0xB2EDF2FA), // #EDF2FAB2 → 70% opacity
+    textFieldFill: Color(0xB2EDF2FA),
+    sidebarHeaderBackground: Color(0x4DFFFFFE),
     cornerRadius: 20.0,
   );
 
   // تم دارک
   static const CustomColors dark = CustomColors(
     primary: Color(0xFF9D81FF),
+    searchBoxFocusedBackground: Color(0x66888B8F),
+    searchBoxBackground: Color(0x4D333333),
     accent: Color(0xFFFF85C0),
     background: Color(0xFF212121),
     inputField: Color(0x66888B8F),
@@ -125,14 +135,18 @@ class CustomColors extends ThemeExtension<CustomColors> {
     error: Color(0xFFD9534F),
     textFieldFill: Color(0x66888B8F), // #888B8F66 → 40% opacity
     cornerRadius: 20.0,
+    sidebarHeaderBackground: const Color(0x4D333333),
   );
 
   @override
   CustomColors copyWith({
     Color? primary,
+    Color? sidebarHeaderBackground,
     Color? accent,
     Color? background,
+    Color? searchBoxBackground,
     Color? inputField,
+    Color? searchBoxFocusedBackground,
     Color? popupBackground,
     Color? textIcon,
     Color? buttonText,
@@ -145,8 +159,11 @@ class CustomColors extends ThemeExtension<CustomColors> {
     double? cornerRadius,
   }) {
     return CustomColors(
+      searchBoxBackground: searchBoxBackground ?? this.searchBoxBackground,
       primary: primary ?? this.primary,
       accent: accent ?? this.accent,
+      searchBoxFocusedBackground:
+          searchBoxFocusedBackground ?? this.searchBoxFocusedBackground,
       background: background ?? this.background,
       inputField: inputField ?? this.inputField,
       popupBackground: popupBackground ?? this.popupBackground,
@@ -159,6 +176,8 @@ class CustomColors extends ThemeExtension<CustomColors> {
       error: error ?? this.error,
       textFieldFill: textFieldFill ?? this.textFieldFill,
       cornerRadius: cornerRadius ?? this.cornerRadius,
+      sidebarHeaderBackground:
+          sidebarHeaderBackground ?? this.sidebarHeaderBackground,
     );
   }
 
@@ -166,6 +185,11 @@ class CustomColors extends ThemeExtension<CustomColors> {
   CustomColors lerp(ThemeExtension<CustomColors>? other, double t) {
     if (other is! CustomColors) return this;
     return CustomColors(
+      searchBoxBackground: Color.lerp(
+        searchBoxBackground,
+        other.searchBoxBackground,
+        t,
+      )!,
       primary: Color.lerp(primary, other.primary, t)!,
       accent: Color.lerp(accent, other.accent, t)!,
       background: Color.lerp(background, other.background, t)!,
@@ -177,9 +201,19 @@ class CustomColors extends ThemeExtension<CustomColors> {
       separator2: Color.lerp(separator2, other.separator2, t)!,
       hintText: Color.lerp(hintText, other.hintText, t)!,
       success: Color.lerp(success, other.success, t)!,
+      searchBoxFocusedBackground: Color.lerp(
+        searchBoxFocusedBackground,
+        other.searchBoxFocusedBackground,
+        t,
+      )!,
       error: Color.lerp(error, other.error, t)!,
       textFieldFill: Color.lerp(textFieldFill, other.textFieldFill, t)!,
       cornerRadius: lerpDouble(cornerRadius, other.cornerRadius, t)!,
+      sidebarHeaderBackground: Color.lerp(
+        sidebarHeaderBackground,
+        other.sidebarHeaderBackground,
+        t,
+      )!,
     );
   }
 }
