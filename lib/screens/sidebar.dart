@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/theme/app_theme.dart';
 import '../state/chat_provider.dart';
-import 'dart:ui'; // برای ImageFilter.blur
+import 'dart:ui';
 
 class AppSidebar extends StatefulWidget {
   const AppSidebar({super.key});
@@ -18,7 +18,7 @@ class _AppSidebarState extends State<AppSidebar> {
   String _searchQuery = '';
   bool _isFocused = false;
   bool _hasText = false;
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -79,47 +79,46 @@ class _AppSidebarState extends State<AppSidebar> {
 
                 const SizedBox(width: 8),
 
-                // 🔥 درست‌شده: Search Box با سایه صحیح
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
+                      // سایه دقیقاً مثل درخواست شما: 0 4px 8px rgba(0,0,0,0.08)
                       boxShadow: _isFocused
                           ? [
                               BoxShadow(
-                                color: const Color.fromARGB(19, 0, 0, 0),
-                                offset: const Offset(0, 3),
-                                blurRadius: 3,
+                                color: const Color(0x14000000), // #00000014
+                                offset: const Offset(0, 4),
+                                blurRadius: 8,
+                                spreadRadius: 0,
                               ),
                             ]
                           : [],
                     ),
-
-                    // ClipRRect نباید Wrap اصلی باشه
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(18),
                       child: BackdropFilter(
                         filter: ImageFilter.blur(
-                          sigmaX: _isFocused ? 10 : 0,
-                          sigmaY: _isFocused ? 10 : 0,
+                          sigmaX: _isFocused ? 5.0 : 0.0,
+                          sigmaY: _isFocused ? 5.0 : 0.0,
                         ),
-
                         child: Container(
                           height: 42,
                           padding: EdgeInsets.zero,
                           decoration: BoxDecoration(
                             color: _isFocused
-                                ? context.colors.searchBoxBackground
-                                : context.colors.searchBoxFocusedBackground,
-                            borderRadius: BorderRadius.circular(18),
+                                ? context.colors.searchBoxFocusedBackground
+                                      .withOpacity(0.5)
+                                : context.colors.searchBoxBackground
+                                      .withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(20),
                             border: _isFocused
                                 ? Border.all(
-                                    color: context.colors.separator,
+                                    color: context.colors.separator2,
                                     width: 1,
                                   )
                                 : null,
                           ),
-
                           child: TextField(
                             controller: _searchController,
                             focusNode: _focusNode,
@@ -132,7 +131,6 @@ class _AppSidebarState extends State<AppSidebar> {
                               hintText: "Search History",
                               hintStyle: TextStyle(
                                 color: context.colors.hintText,
-
                                 fontSize: 14,
                               ),
                               prefixIcon: Padding(
@@ -141,16 +139,15 @@ class _AppSidebarState extends State<AppSidebar> {
                                   "assets/icons/serch.svg",
                                   width: 16,
                                   height: 16,
+                                  color: context.colors.textIcon,
                                 ),
                               ),
-
-                              // ضربدر فقط هنگام فوکوس
                               suffixIcon: _isFocused
                                   ? IconButton(
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.clear,
                                         size: 18,
-                                        color: Color.fromARGB(255, 26, 26, 26),
+                                        color: context.colors.textIcon,
                                       ),
                                       onPressed: () {
                                         _searchController.clear();
@@ -161,7 +158,6 @@ class _AppSidebarState extends State<AppSidebar> {
                                       },
                                     )
                                   : null,
-
                               border: InputBorder.none,
                               isDense: true,
                               contentPadding: const EdgeInsets.symmetric(
@@ -184,6 +180,7 @@ class _AppSidebarState extends State<AppSidebar> {
                     "assets/icons/sidbar.svg",
                     width: 18,
                     height: 18,
+                    color: context.colors.textIcon,
                   ),
                 ),
               ],
@@ -207,107 +204,108 @@ class _AppSidebarState extends State<AppSidebar> {
 
           // لیست تاریخچه
           Expanded(
-            child: filteredHistory.isEmpty
-                ? Center(
-                    child: Text(
-                      _searchQuery.isEmpty
-                          ? "No chat history yet"
-                          : "No results found",
-                      style: TextStyle(color: context.colors.hintText),
-                    ),
-                  )
-                : ListView.builder(
-                    physics: const ClampingScrollPhysics(),
-                    clipBehavior: Clip.antiAlias,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    itemCount: filteredHistory.length,
-                    itemBuilder: (context, index) {
-                      final chat = filteredHistory[index];
-                      final isPinned = chat.isPinned;
+            child: ClipRect(
+              child: filteredHistory.isEmpty
+                  ? Center(
+                      child: Text(
+                        _searchQuery.isEmpty
+                            ? "No chat history yet"
+                            : "No results found",
+                        style: TextStyle(color: context.colors.hintText),
+                      ),
+                    )
+                  : ListView.builder(
+                      physics: const ClampingScrollPhysics(),
+                      clipBehavior: Clip.antiAlias,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      itemCount: filteredHistory.length,
+                      itemBuilder: (context, index) {
+                        final chat = filteredHistory[index];
+                        final isPinned = chat.isPinned;
 
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 1,
-                          horizontal: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: context.colors.background,
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 1,
+                            horizontal: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.background,
 
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: ListTile(
-                          enableFeedback: false,
-                          selectedTileColor: const Color.fromARGB(
-                            255,
-                            160,
-                            160,
-                            160,
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          selected: chatProvider.currentChatId == chat.id,
-                          tileColor: const Color.fromARGB(221, 255, 255, 255),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          contentPadding: const EdgeInsets.fromLTRB(
-                            16,
-                            1,
-                            1,
-                            1,
-                          ),
-                          title: Row(
-                            children: [
-                              if (isPinned)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4),
-                                  child: SvgPicture.asset(
-                                    "assets/icons/pin.svg",
+                          child: ListTile(
+                            enableFeedback: false,
+                            selectedTileColor: const Color.fromARGB(
+                              255,
+                              160,
+                              160,
+                              160,
+                            ),
+                            selected: chatProvider.currentChatId == chat.id,
+                            tileColor: const Color.fromARGB(221, 255, 255, 255),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            contentPadding: const EdgeInsets.fromLTRB(
+                              16,
+                              1,
+                              1,
+                              1,
+                            ),
+                            title: Row(
+                              children: [
+                                if (isPinned)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: SvgPicture.asset(
+                                      "assets/icons/pin.svg",
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    chat.title,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                              Expanded(
-                                child: Text(
-                                  chat.title,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              ],
+                            ),
+
+                            subtitle: Text(
+                              "6 hours ago",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: context.colors.hintText,
                               ),
-                            ],
-                          ),
-
-                          subtitle: Text(
-                            "6 hours ago",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: context.colors.hintText,
                             ),
-                          ),
-                          trailing: IconButton(
-                            // تغییر جدید: به جای PopupMenuButton، IconButton برای باز کردن BottomSheet
-                            icon: SvgPicture.asset(
-                              "assets/icons/3.svg",
-                              width: 18,
-                              height: 18,
+                            trailing: IconButton(
+                              icon: SvgPicture.asset(
+                                "assets/icons/3.svg",
+                                width: 18,
+                                height: 18,
+                              ),
+                              onPressed: () {
+                                _showBottomMenu(
+                                  context,
+                                  chat,
+                                  chatProvider,
+                                  isPinned,
+                                );
+                              },
                             ),
-                            onPressed: () {
-                              _showBottomMenu(
-                                context,
-                                chat,
-                                chatProvider,
-                                isPinned,
-                              ); // تغییر جدید: فراخوانی BottomSheet
+                            onTap: () {
+                              chatProvider.loadChat(chat.id);
+                              Navigator.pop(context);
                             },
                           ),
-                          onTap: () {
-                            chatProvider.loadChat(chat.id);
-                            Navigator.pop(context);
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),
@@ -334,8 +332,8 @@ class _AppSidebarState extends State<AppSidebar> {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              border: Border.all(color: const Color(0xFFD1D5DB), width: 0.8),
+              color: Colors.white.withOpacity(0.05),
+              border: Border.all(color: context.colors.separator2, width: 0.8),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
               ),
@@ -346,15 +344,11 @@ class _AppSidebarState extends State<AppSidebar> {
               children: [
                 Center(
                   child: Container(
-                    margin: const EdgeInsets.only(
-                      top: 5,
-                      bottom: 16,
-                    ), // فاصله از بالا
-                    width: 58, // طول خط
-                    height: 5, // ضخامت خط
+                    margin: const EdgeInsets.only(top: 5, bottom: 16),
+                    width: 58,
+                    height: 5,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300], // در تم روشن
-                      // color: Colors.grey[600], // در تم تاریک
+                      color: context.colors.separator2,
                       borderRadius: BorderRadius.circular(3),
                     ),
                   ),
@@ -396,7 +390,6 @@ class _AppSidebarState extends State<AppSidebar> {
     );
   }
 
-  // متد کمکی برای جلوگیری از تکرار کد
   Widget _buildMenuItem({
     IconData? icon,
     Widget? iconWidget,
@@ -410,10 +403,10 @@ class _AppSidebarState extends State<AppSidebar> {
           ? SvgPicture.asset(iconSvgPath, width: 22, height: 22)
           : icon != null
           ? Icon(icon, size: 22)
-          : const SizedBox(width: 22, height: 22), // fallback
+          : const SizedBox(width: 22, height: 22),
       title: Text(
         title,
-        style: TextStyle(color: titleColor ?? Colors.black87, fontSize: 15),
+        style: TextStyle(color: context.colors.textIcon, fontSize: 15),
       ),
       onTap: onTap,
     );

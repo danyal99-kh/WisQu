@@ -133,9 +133,9 @@ class CustomColors extends ThemeExtension<CustomColors> {
     hintText: Color(0xFFD1D5DB),
     success: Color(0xFF28B463),
     error: Color(0xFFD9534F),
-    textFieldFill: Color(0x66888B8F), // #888B8F66 → 40% opacity
+    textFieldFill: Color(0x66888B8F),
     cornerRadius: 20.0,
-    sidebarHeaderBackground: const Color(0x4D333333),
+    sidebarHeaderBackground: Color(0x4D333333),
   );
 
   @override

@@ -5,6 +5,7 @@ import 'package:wisqu/screens/ResetPasword.dart';
 import 'package:wisqu/screens/home_screen.dart';
 import 'package:wisqu/state/auth_provider.dart';
 import 'package:wisqu/state/chat_provider.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import 'package:wisqu/widget/custom_button.dart';
 import 'package:wisqu/widget/custom_textfield.dart';
 
@@ -118,9 +119,9 @@ class _PasswordLoginPageState extends State<PasswordLoginPage>
     final double titleFontSize = screenWidth * 0.07;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.background,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
@@ -148,7 +149,7 @@ class _PasswordLoginPageState extends State<PasswordLoginPage>
               Text(
                 'Welcome back, X!',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: context.colors.hintText,
                   fontSize: titleFontSize,
                   fontFamily: 'OpenSans',
                   fontWeight: FontWeight.w600,
@@ -164,9 +165,10 @@ class _PasswordLoginPageState extends State<PasswordLoginPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       " Password",
                       style: TextStyle(
+                        color: context.colors.hintText,
                         fontSize: 16,
                         fontFamily: 'OpenSans',
                         fontWeight: FontWeight.w400,
@@ -206,8 +208,8 @@ class _PasswordLoginPageState extends State<PasswordLoginPage>
 
                     RichText(
                       text: TextSpan(
-                        style: const TextStyle(
-                          color: Colors.black87,
+                        style: TextStyle(
+                          color: context.colors.hintText,
                           fontSize: 16,
                         ),
                         children: [
@@ -222,11 +224,11 @@ class _PasswordLoginPageState extends State<PasswordLoginPage>
                                   ),
                                 );
                               },
-                              child: const Text(
+                              child: Text(
                                 "Reset pasword",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Color.fromRGBO(93, 63, 211, 1),
+                                  color: context.colors.accent,
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.underline,
                                 ),

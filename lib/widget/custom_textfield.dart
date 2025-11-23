@@ -128,7 +128,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   hintText: widget.hintText,
-                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
+                  hintStyle: TextStyle(
+                    color: context.colors.hintText,
+                    fontSize: 16,
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
                     vertical: 18,
                     horizontal: 8,
