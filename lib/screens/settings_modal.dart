@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/state/theme_provider.dart';
+import 'package:wisqu/theme/app_theme.dart';
 
 void showSettingsPopup(BuildContext context, GlobalKey buttonKey) {
   final RenderBox button =
@@ -69,8 +70,8 @@ void showSettingsPopup(BuildContext context, GlobalKey buttonKey) {
                         // ✅ backdrop-filter: blur(32px)
                         filter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
                         child: Container(
-                          width: 172,
-                          height: 52,
+                          width: 165,
+                          height: 65,
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: isDark
@@ -167,7 +168,7 @@ Widget _themeIcon({
         asset,
         width: 20,
         height: 20,
-        color: _getIconColor(context, themeProvider, isActive),
+        color: context.colors.primary,
       ),
     ),
   );
