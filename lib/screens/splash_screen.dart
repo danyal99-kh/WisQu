@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import 'dart:async';
 import 'home_screen.dart'; // صفحه اصلی برنامه
 
@@ -10,11 +12,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
+  double get screenHeight => MediaQuery.of(context).size.height;
+  double get screenWidth => MediaQuery.of(context).size.width;
   void initState() {
     super.initState();
-    // 3 ثانیه صبر کن و بعد به صفحه اصلی برو
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 2), () {
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
@@ -25,7 +27,13 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image.asset('assets/logo.png', width: 150, height: 150),
+        child: SvgPicture.asset(
+          'assets/icons/logo.svg',
+          width: screenWidth * 0.2,
+          height: screenHeight * 0.2,
+          color: context.colors.textIcon,
+          fit: BoxFit.contain,
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:wisqu/screens/confrimPasswordScreen.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import 'package:wisqu/widget/custom_button.dart';
 
 class ResetPasword extends StatefulWidget {
@@ -65,12 +66,12 @@ class _ResetPaswordState extends State<ResetPasword> {
         width: boxSize,
         height: boxSize,
         decoration: BoxDecoration(
-          color: const Color.fromRGBO(240, 245, 250, 1),
+          color: context.colors.inputField,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isFocused
-                ? const Color.fromRGBO(93, 63, 211, 1)
-                : const Color.fromARGB(192, 201, 201, 201),
+                ? context.colors.accent
+                : context.colors.separator2,
             width: isFocused ? 2.0 : 1.0,
           ),
         ),
@@ -117,9 +118,9 @@ class _ResetPaswordState extends State<ResetPasword> {
     final keyboardHeight = mediaQuery.viewInsets.bottom;
     final double horizontalPadding = screenWidth * 0.9;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.background,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
@@ -157,7 +158,7 @@ class _ResetPaswordState extends State<ResetPasword> {
                 text: TextSpan(
                   style: TextStyle(
                     fontSize: screenWidth * 0.037,
-                    color: Colors.black87,
+                    color: context.colors.textIcon,
                   ),
                   children: [
                     const TextSpan(text: 'We have sent a'),
@@ -173,7 +174,7 @@ class _ResetPaswordState extends State<ResetPasword> {
                 'Please enter the code to continue.',
                 style: TextStyle(
                   fontSize: screenWidth * 0.037,
-                  color: Colors.black87,
+                  color: context.colors.textIcon,
                 ),
               ),
               SizedBox(height: screenHeight * 0.03),
@@ -190,19 +191,19 @@ class _ResetPaswordState extends State<ResetPasword> {
                 text: TextSpan(
                   style: TextStyle(
                     fontSize: screenWidth * 0.037,
-                    color: Colors.black87,
+                    color: context.colors.textIcon,
                   ),
                   children: [
-                    const TextSpan(
+                    TextSpan(
                       text:
                           "Didn't receive the email? Check your spam folder or ",
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(color: context.colors.textIcon),
                     ),
                     TextSpan(
                       text: 'Resend code',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 236, 90, 155),
+                        color: context.colors.accent,
                         decoration: TextDecoration.underline,
                       ),
                       recognizer: _resendRecognizer,

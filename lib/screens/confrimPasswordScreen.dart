@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisqu/state/auth_provider.dart';
 import 'package:wisqu/state/chat_provider.dart';
+import 'package:wisqu/theme/app_theme.dart';
 import 'package:wisqu/widget/custom_button.dart';
 import 'package:wisqu/widget/custom_textfield.dart';
 
@@ -133,17 +134,20 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     final textFieldWidth = screenWidth * 0.92;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.background,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.background,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: const Text('auth.wisq.ai'),
+        title: Text(
+          'auth.wisq.ai',
+          style: TextStyle(color: context.colors.hintText),
+        ),
         actions: [IconButton(icon: const Icon(Icons.shield), onPressed: () {})],
       ),
       body: SafeArea(
@@ -162,6 +166,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     style: TextStyle(
                       fontSize: screenWidth * 0.05, // کاهش اندازه فونت
                       fontWeight: FontWeight.bold,
+                      color: context.colors.hintText,
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.015),
@@ -169,6 +174,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     'Please create a strong password that is easy for you to remember but difficult for others to guess.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                      color: context.colors.hintText,
+
                       fontSize: screenWidth * 0.035,
                     ), // کاهش اندازه فونت
                   ),
@@ -176,7 +183,15 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Password", style: TextStyle(fontSize: 16)),
+                      Text(
+                        "Password",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+
+                          fontSize: 16,
+                          color: context.colors.hintText,
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       CustomTextField(
                         controller: _passwordController,
@@ -185,6 +200,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           "assets/icons/lock.svg",
                           width: 24,
                           height: 24,
+                          color: context.colors.primary,
                         ),
                         isPassword: true,
                         errorNotifier: ValueNotifier<String?>(
@@ -199,8 +215,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     children: [
                       Icon(
                         Icons.info_outline,
-                        size: 19,
-                        color: const Color.fromRGBO(93, 63, 211, 1),
+                        size: 20,
+                        color: context.colors.primary,
                       ),
                       SizedBox(width: screenWidth * 0.005),
                       Container(
@@ -285,9 +301,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Confirm Password",
                         style: TextStyle(
+                          color: context.colors.hintText,
+
                           fontSize: 16,
                           fontFamily: 'OpenSans',
                           fontWeight: FontWeight.w600,
@@ -296,11 +314,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       const SizedBox(height: 6),
                       CustomTextField(
                         controller: _confirmPasswordController,
-                        hintText: 'Confirm your password',
+                        hintText: 'Confirm password',
                         icon: SvgPicture.asset(
                           "assets/icons/lock.svg",
                           width: 24,
                           height: 24,
+                          color: context.colors.primary,
                         ),
                         isPassword: true,
                         errorNotifier: _confirmPasswordError, // این مهمه!
@@ -322,7 +341,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                             content: Text(
                               "Please choose a stronger password (Good or higher)",
                             ),
-                            backgroundColor: Colors.red,
+                            backgroundColor: Color.fromARGB(255, 255, 105, 95),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );

@@ -82,14 +82,15 @@ class _LoginPageState extends State<EmailLoginPage>
               AnimatedScale(
                 scale: isKeyboardOpen ? 0.7 : 1.0,
                 duration: const Duration(milliseconds: 300),
-                child: Image.asset(
-                  "assets/logo.png",
-                  width: size.width * 0.35,
-                  height: size.height * 0.18,
+                child: SvgPicture.asset(
+                  'assets/icons/logo.svg',
+                  width: size.width * 0.1,
+                  height: size.height * 0.15,
+                  color: context.colors.textIcon,
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 20),
 
               // 🔹 متن توضیحی
               AnimatedDefaultTextStyle(
@@ -116,7 +117,13 @@ class _LoginPageState extends State<EmailLoginPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Email", style: TextStyle(fontSize: 16)),
+                    Text(
+                      "Email",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: context.colors.hintText,
+                      ),
+                    ),
                     const SizedBox(height: 6),
 
                     // استفاده از CustomTextField به جای کد دستی
@@ -131,6 +138,7 @@ class _LoginPageState extends State<EmailLoginPage>
                             "assets/icons/mail.svg",
                             width: 24,
                             height: 24,
+                            color: context.colors.primary,
                           ),
                           errorNotifier: _emailErrorNotifier,
 
@@ -195,15 +203,15 @@ class _LoginPageState extends State<EmailLoginPage>
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colors.separator,
+                    backgroundColor: context.colors.background,
                     minimumSize: const Size(double.infinity, 37),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    side: const BorderSide(
+                    side: BorderSide(
                       // حاشیه!
-                      color: Color.fromRGBO(160, 160, 160, 0.385),
-                      width: 1,
+                      color: context.colors.separator,
+                      width: 2,
                     ),
                     elevation: 0,
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:wisqu/theme/app_theme.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -90,7 +91,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 color: hasError
                     ? Colors.red
                     : (isFocused || hasText || isKeyboardOpen)
-                    ? const Color.fromRGBO(93, 63, 211, 1)
+                    ? context.colors.primary
                     : Colors.grey.withOpacity(0.3),
                 width: hasError ? 2.0 : 1.2,
               ),
@@ -115,11 +116,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           onTap: _toggleObscureText,
                           child: Padding(
                             padding: const EdgeInsets.all(12),
-                            child: Icon(
+                            child: SvgPicture.asset(
                               _obscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.grey[600],
+                                  ? 'assets/icons/eye-closed.svg' // وقتی پسورد مخفیه
+                                  : 'assets/icons/eye.svg',
+                              color: context.colors.primary,
                             ),
                           ),
                         )

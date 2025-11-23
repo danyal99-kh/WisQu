@@ -13,13 +13,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final ValueNotifier<bool> showWelcomeText = ValueNotifier(true);
+  final GlobalKey _settingsButtonKey = GlobalKey();
+
   final ValueNotifier<bool> isTyping = ValueNotifier(false);
   final ValueNotifier<int?> _selectedMessageIndex = ValueNotifier(null);
   late final AnimationController _messageAnimController;
@@ -301,6 +302,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 'assets/icons/logo.svg',
                                 width: screenWidth * 0.3,
                                 height: screenHeight * 0.13,
+                                color: context.colors.textIcon,
                                 fit: BoxFit.contain,
                               ),
                             ),
@@ -358,6 +360,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       children: [
                                         // Settings
                                         IconButton(
+                                          key: _settingsButtonKey,
                                           icon: SvgPicture.asset(
                                             "assets/icons/settings.svg",
                                             width: 22,
@@ -367,8 +370,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               BlendMode.srcIn,
                                             ),
                                           ),
-                                          onPressed: () =>
-                                              showSettingsPopup(context),
+                                          onPressed: () => showSettingsPopup(
+                                            context,
+                                            _settingsButtonKey,
+                                          ),
                                         ),
                                         const SizedBox(width: 8),
                                         // Get Started
@@ -430,6 +435,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               'assets/icons/logo.svg',
                                               height: 36,
                                               fit: BoxFit.contain,
+                                              color: context.colors.textIcon,
                                             ),
                                           ),
                                           const SizedBox(width: 10),
@@ -534,6 +540,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           // اگر لاگین نکرده ولی پیام فرستاده → فقط Settings + Get Started
                                           else ...[
                                             IconButton(
+                                              key: _settingsButtonKey,
                                               icon: SvgPicture.asset(
                                                 "assets/icons/settings.svg",
                                                 width: 20,
@@ -544,7 +551,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 ),
                                               ),
                                               onPressed: () =>
-                                                  showSettingsPopup(context),
+                                                  showSettingsPopup(
+                                                    context,
+                                                    _settingsButtonKey,
+                                                  ),
                                             ),
                                             const SizedBox(width: 8),
                                             ElevatedButton(

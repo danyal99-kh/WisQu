@@ -1,14 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:wisqu/state/theme_provider.dart'; // مسیر رو درست کن اگه فرق داره
+import 'dart:ui';
 
-void showSettingsPopup(BuildContext context) {
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:wisqu/state/theme_provider.dart';
+
+void showSettingsPopup(BuildContext context, GlobalKey buttonKey) {
+  final RenderBox button =
+      buttonKey.currentContext!.findRenderObject() as RenderBox;
+  final Offset buttonPosition = button.localToGlobal(Offset.zero);
+
   OverlayEntry? entry;
-  final overlay = Overlay.of(context);
 
   final AnimationController controller = AnimationController(
     vsync: Navigator.of(context),
-    duration: const Duration(milliseconds: 200),
+    duration: const Duration(milliseconds: 300),
   )..forward();
 
   final Animation<double> scale = CurvedAnimation(
@@ -20,17 +26,10 @@ void showSettingsPopup(BuildContext context) {
     builder: (context) => Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         final isDark = themeProvider.isDarkMode;
-        final backgroundColor = isDark
-            ? const Color(0xFF1E1E1E)
-            : const Color(0xFFF5F5F5);
-        final textColor = isDark ? Colors.white : Colors.black87;
-        final shadowColor = isDark
-            ? Colors.black.withOpacity(0.5)
-            : Colors.black.withOpacity(0.09);
 
         return Stack(
           children: [
-            // لایه شفاف برای بستن با کلیک بیرون
+            // کلیک بیرون = بستن
             GestureDetector(
               onTap: () {
                 controller.reverse().then((_) {
@@ -38,65 +37,89 @@ void showSettingsPopup(BuildContext context) {
                   controller.dispose();
                 });
               },
-              behavior: HitTestBehavior.translucent,
               child: Container(color: Colors.transparent),
             ),
 
-            // خود پاپ‌آپ
+            // پاپ‌آپ
             Positioned(
-              top: 80,
-              right: 43,
+              top: buttonPosition.dy + button.size.height + 8,
+              left: buttonPosition.dx - 72,
               child: Material(
                 color: Colors.transparent,
                 child: ScaleTransition(
                   scale: scale,
                   child: Container(
-                    width: 180,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 20,
-                    ),
                     decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(26),
+                      // ✅ اضافه کردن سایه
                       boxShadow: [
                         BoxShadow(
-                          color: shadowColor,
-                          blurRadius: 16,
-                          offset: const Offset(0, 10),
+                          color: const Color(
+                            0x00000000,
+                          ).withOpacity(0.08), // #00000014
+                          offset: const Offset(0, 4),
+                          blurRadius: 8,
+                          spreadRadius: 0,
                         ),
                       ],
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // ردیف تم‌ها
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _themeIcon(
-                              context: context,
-                              asset: 'assets/icons/moon.png',
-                              mode: ThemeMode.dark,
-                              isActive:
-                                  themeProvider.themeMode == ThemeMode.dark,
-                              controller: controller, // پاس دادیم
-                              entry: entry!, // پاس دادیم
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(26),
+                      child: BackdropFilter(
+                        // ✅ backdrop-filter: blur(32px)
+                        filter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
+                        child: Container(
+                          width: 172,
+                          height: 52,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? Colors.black.withOpacity(0.35)
+                                : Colors.white.withOpacity(0.65),
+                            borderRadius: BorderRadius.circular(26),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.15)
+                                  : Colors.black.withOpacity(0.08),
+                              width: 0.5,
                             ),
-                            _themeIcon(
-                              context: context,
-                              asset: 'assets/icons/sun.png',
-                              mode: ThemeMode.light,
-                              isActive:
-                                  themeProvider.themeMode == ThemeMode.light,
-                              controller: controller,
-                              entry: entry!,
-                            ),
-                          ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _themeIcon(
+                                context: context,
+                                asset: 'assets/icons/moon.svg',
+                                mode: ThemeMode.dark,
+                                isActive:
+                                    themeProvider.themeMode == ThemeMode.dark,
+                                controller: controller,
+                                entry: entry!,
+                              ),
+                              const SizedBox(width: 6),
+                              _themeIcon(
+                                context: context,
+                                asset: 'assets/icons/sun.svg',
+                                mode: ThemeMode.light,
+                                isActive:
+                                    themeProvider.themeMode == ThemeMode.light,
+                                controller: controller,
+                                entry: entry!,
+                              ),
+                              const SizedBox(width: 6),
+                              _themeIcon(
+                                context: context,
+                                asset: 'assets/icons/compoter.svg',
+                                mode: ThemeMode.system,
+                                isActive:
+                                    themeProvider.themeMode == ThemeMode.system,
+                                controller: controller,
+                                entry: entry!,
+                              ),
+                            ],
+                          ),
                         ),
-
-                        const SizedBox(height: 16),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -108,7 +131,7 @@ void showSettingsPopup(BuildContext context) {
     ),
   );
 
-  overlay.insert(entry);
+  Overlay.of(context).insert(entry);
 }
 
 Widget _themeIcon({
@@ -116,15 +139,14 @@ Widget _themeIcon({
   required String asset,
   required ThemeMode mode,
   required bool isActive,
-  required AnimationController controller, // این رو اضافه کردیم
-  required OverlayEntry entry, // اینم اضافه کردیم
+  required AnimationController controller,
+  required OverlayEntry entry,
 }) {
+  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
   return GestureDetector(
     onTap: () {
-      // عوض کردن تم
-      Provider.of<ThemeProvider>(context, listen: false).setThemeMode(mode);
-
-      // بستن پاپ‌آپ با انیمیشن (از controller و entry اصلی استفاده می‌کنیم)
+      themeProvider.setThemeMode(mode);
       controller.reverse().then((_) {
         entry.remove();
         controller.dispose();
@@ -132,23 +154,40 @@ Widget _themeIcon({
     },
     child: AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.all(12),
+      width: 36,
+      height: 36,
       decoration: BoxDecoration(
-        color: isActive ? Colors.blue.withOpacity(0.25) : Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isActive ? Colors.blue : Colors.transparent,
-          width: 2.5,
-        ),
+        color: isActive
+            ? _getActiveColor(context, themeProvider)
+            : Colors.transparent,
+        shape: BoxShape.circle,
       ),
-      child: Image.asset(
+      alignment: Alignment.center,
+      child: SvgPicture.asset(
         asset,
-        width: 26,
-        height: 26,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white
-            : Colors.black87,
+        width: 20,
+        height: 20,
+        color: _getIconColor(context, themeProvider, isActive),
       ),
     ),
   );
+}
+
+Color _getActiveColor(BuildContext context, ThemeProvider themeProvider) {
+  return themeProvider.isDarkMode
+      ? Colors.white.withOpacity(0.2)
+      : Colors.blue.withOpacity(0.15);
+}
+
+Color _getIconColor(
+  BuildContext context,
+  ThemeProvider themeProvider,
+  bool isActive,
+) {
+  if (isActive) {
+    return themeProvider.isDarkMode ? Colors.white : Colors.blue;
+  }
+  return themeProvider.isDarkMode
+      ? Colors.white.withOpacity(0.7)
+      : Colors.black87;
 }
