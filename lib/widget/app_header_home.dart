@@ -18,18 +18,18 @@ class AppHeader extends StatelessWidget {
     super.key,
     required this.scaffoldKey,
     required this.chatProvider,
+    required void Function() onNewChat,
   });
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           height: kToolbarHeight + MediaQuery.of(context).padding.top + 8,
-          color: context.colors.popupBackground,
-          padding: const EdgeInsets.only(top: 18, left: 12, right: 12),
+          color: context.colors.background.withOpacity(0.07),
+          padding: const EdgeInsets.only(top: 20, left: 12, right: 12),
           child: Consumer2<AuthProvider, ChatProvider>(
             builder: (context, authProvider, chatProvider, child) {
               return _buildHeaderContent(context, authProvider, chatProvider);

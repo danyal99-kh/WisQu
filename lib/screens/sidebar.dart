@@ -66,8 +66,9 @@ class _AppSidebarState extends State<AppSidebar> {
         children: [
           Container(
             color: context.colors.sidebarHeaderBackground,
+            height: kToolbarHeight + MediaQuery.of(context).padding.top + 8,
 
-            padding: const EdgeInsets.fromLTRB(16, 50, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
             child: Row(
               children: [
                 // آواتار کاربر
@@ -83,11 +84,10 @@ class _AppSidebarState extends State<AppSidebar> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
-                      // سایه دقیقاً مثل درخواست شما: 0 4px 8px rgba(0,0,0,0.08)
                       boxShadow: _isFocused
                           ? [
                               BoxShadow(
-                                color: const Color(0x14000000), // #00000014
+                                color: const Color(0x14000000),
                                 offset: const Offset(0, 4),
                                 blurRadius: 8,
                                 spreadRadius: 0,
@@ -235,14 +235,7 @@ class _AppSidebarState extends State<AppSidebar> {
                           ),
                           child: ListTile(
                             enableFeedback: false,
-                            selectedTileColor: const Color.fromARGB(
-                              255,
-                              160,
-                              160,
-                              160,
-                            ),
                             selected: chatProvider.currentChatId == chat.id,
-                            tileColor: const Color.fromARGB(221, 255, 255, 255),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),

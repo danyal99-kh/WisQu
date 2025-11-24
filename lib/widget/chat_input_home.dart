@@ -2,9 +2,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:wisqu/state/chat_provider.dart';
 import 'package:wisqu/theme/app_theme.dart';
 
@@ -13,13 +11,14 @@ class ChatInput extends StatefulWidget {
   final bool keyboardOpen;
   final VoidCallback onSendMessage;
   final ValueNotifier<bool>? isTyping;
-
+  final VoidCallback? onNewChat;
   const ChatInput({
     super.key,
     required this.chatProvider,
     required this.keyboardOpen,
     required this.onSendMessage,
     this.isTyping,
+    this.onNewChat,
   });
 
   @override
@@ -57,22 +56,15 @@ class _ChatInputState extends State<ChatInput> {
 
   Widget _buildTextField() {
     return Container(
-      width: 380, // دقیقاً از فیگما
-      height: 60, // حالت اولیه
-      constraints: const BoxConstraints(
-        maxHeight: 100, // حداکثر ارتفاع
-      ),
-      margin: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: 8, // gap بین فیلد و متن زیر
-      ),
+      width: 380,
+      height: 60,
+      constraints: const BoxConstraints(maxHeight: 100),
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: context.colors.inputField, // #EDF2FAB2
         boxShadow: [
           BoxShadow(
-            color: context.colors.textIcon.withOpacity(0.08),
+            color: context.colors.textIcon.withOpacity(0.09),
             offset: const Offset(0, 4),
             blurRadius: 8,
           ),
@@ -81,19 +73,21 @@ class _ChatInputState extends State<ChatInput> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
-            padding: const EdgeInsets.all(12), // دقیقاً از فیگما
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: context.colors.inputField.withOpacity(0.3),
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: context.colors.separator.withOpacity(0.1),
+                width: 1,
+              ),
             ),
             child: Row(
               children: [
-                // === TextField ===
                 _buildTextInput(),
-                const SizedBox(width: 8), // gap بین فیلد و دکمه
-                // === دکمه ارسال ===
+                const SizedBox(width: 8),
                 _buildSendButton(),
               ],
             ),
@@ -111,7 +105,7 @@ class _ChatInputState extends State<ChatInput> {
           return TextField(
             controller: widget.chatProvider.textController,
             minLines: 1,
-            maxLines: 3, // تا 100px جا بشه
+            maxLines: 3,
             onChanged: (value) {
               _isTyping.value = value.trim().isNotEmpty;
             },
@@ -137,50 +131,53 @@ class _ChatInputState extends State<ChatInput> {
   }
 
   Widget _buildSendButton() {
-    return GestureDetector(
-      onTapDown: (_) => setState(() {}),
-      onTapUp: (_) => setState(() {}),
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: context.colors.background,
-          shape: BoxShape.circle,
-          border: Border.all(color: context.colors.separator, width: 1),
-        ),
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          icon: SvgPicture.asset(
-            "assets/icons/Send.svg",
-            width: 20,
-            height: 20,
-            colorFilter: ColorFilter.mode(
-              context.colors.primary,
-              BlendMode.srcIn,
-            ),
-          ),
-          onPressed: () {
-            if (_isTyping.value) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isTyping,
+      builder: (context, typing, child) {
+        return GestureDetector(
+          onTap: () {
+            if (typing) {
               widget.onSendMessage();
               _isTyping.value = false;
             }
           },
-        ),
-      ),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: context.colors.background.withOpacity(0.8),
+              shape: BoxShape.circle,
+              border: Border.all(color: context.colors.separator2, width: 1),
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: SvgPicture.asset(
+                "assets/icons/Send.svg",
+                width: 20,
+                height: 20,
+                colorFilter: ColorFilter.mode(
+                  typing ? context.colors.primary : context.colors.hintText,
+                  BlendMode.srcIn,
+                ),
+              ),
+              onPressed: null,
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildFooterText() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Text(
         "Trained on religious ruling questions. By messaging, you agree to our Terms and Privacy Policy.",
         textAlign: TextAlign.center,
         style: TextStyle(
           fontFamily: 'OpenSans',
           fontWeight: FontWeight.w300,
-          color:
-              Colors.grey, // می‌توانید از context.colors.hintText استفاده کنید
+          color: context.colors.hintText,
           fontSize: 12,
         ),
       ),

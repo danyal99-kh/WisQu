@@ -16,13 +16,18 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  final ValueNotifier<bool> showWelcomeText = ValueNotifier(true);
+class _HomeScreenState extends State<HomeScreen>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  bool _showWelcomeText = true;
+  bool _isTyping = false;
+  int? _selectedMessageIndex;
 
-  final ValueNotifier<bool> isTyping = ValueNotifier(false);
-  final ValueNotifier<int?> _selectedMessageIndex = ValueNotifier(null);
   late final AnimationController _messageAnimController;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -35,65 +40,82 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _messageAnimController.dispose();
-    _selectedMessageIndex.dispose();
-    isTyping.dispose();
     super.dispose();
   }
 
   void _onSendMessage() {
     final chatProvider = context.read<ChatProvider>();
 
-    _selectedMessageIndex.value = null;
+    setState(() {
+      _selectedMessageIndex = null;
+    });
+
     chatProvider.sendMessage(
       onNewBotMessage: () {
-        _messageAnimController.reset();
-        _messageAnimController.forward();
+        if (mounted) {
+          _messageAnimController.reset();
+          _messageAnimController.forward();
+        }
       },
     );
 
-    if (showWelcomeText.value) {
-      Future.delayed(
-        const Duration(milliseconds: 100),
-        () => showWelcomeText.value = false,
-      );
+    if (_showWelcomeText) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          setState(() {
+            _showWelcomeText = false;
+          });
+        }
+      });
     }
+  }
+
+  void _startNewChat() {
+    final chatProvider = context.read<ChatProvider>();
+    chatProvider.startNewChat();
+
+    setState(() {
+      _showWelcomeText = true;
+      _selectedMessageIndex = null;
+    });
+
+    FocusScope.of(context).unfocus();
+    _messageAnimController.reset();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final chatProvider = Provider.of<ChatProvider>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final headerHeight = kToolbarHeight + MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _scaffoldState,
       drawer: const AppSidebar(),
-
-      extendBodyBehindAppBar: true,
       backgroundColor: context.colors.background,
-
       body: Stack(
         children: [
-          SafeArea(
-            top: false,
+          // 🔹 محتوای اصلی - کل صفحه رو پر میکنه
+          Positioned.fill(
             child: Column(
               children: [
+                // محتوای چت
                 Expanded(
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // 🔹 لیست پیام‌ها (زیر خوشامدگویی)
+                      // لیست پیام‌ها
                       ListView.builder(
                         controller: chatProvider.scrollController,
                         padding: EdgeInsets.only(
-                          top:
-                              kToolbarHeight +
-                              MediaQuery.of(context).padding.top +
-                              20,
+                          top: headerHeight + 1, // فاصله برای هدر
                           left: 8,
                           right: 8,
-                          bottom: 100,
+                          bottom: keyboardOpen ? 90 : 120,
                         ),
                         itemCount: chatProvider.messages.length,
                         itemBuilder: (context, index) {
@@ -108,11 +130,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           final bool showActionsByDefault =
                               !message.isUser &&
                               index == chatProvider.messages.length - 1;
+
                           Widget messageWidget = GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedMessageIndex.value =
-                                    _selectedMessageIndex.value == index
+                                _selectedMessageIndex =
+                                    _selectedMessageIndex == index
                                     ? null
                                     : index;
                               });
@@ -124,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ? CrossAxisAlignment.end
                                     : CrossAxisAlignment.start,
                                 children: [
-                                  // --- پیام ---
+                                  // پیام
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 10,
@@ -165,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                   ),
 
+                                  // آیکون‌های اکشن
                                   AnimatedSwitcher(
                                     duration: const Duration(milliseconds: 250),
                                     transitionBuilder: (child, animation) {
@@ -186,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       );
                                     },
                                     child:
-                                        _selectedMessageIndex.value == index ||
+                                        _selectedMessageIndex == index ||
                                             showActionsByDefault
                                         ? Padding(
                                             key: ValueKey('actions_$index'),
@@ -198,9 +222,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                // آیکون‌های پیام کاربر
                                                 if (message.isUser) ...[
-                                                  // آیکون کپی برای تمام پیام‌های کاربر
                                                   _buildIconButton(
                                                     icon: SvgPicture.asset(
                                                       "assets/icons/copy.svg",
@@ -225,7 +247,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                       );
                                                     },
                                                   ),
-                                                  // آیکون مداد فقط برای آخرین پیام کاربر
                                                   if (isLastUserMessage)
                                                     _buildIconButton(
                                                       icon: SvgPicture.asset(
@@ -237,10 +258,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                       onPressed: () {},
                                                     ),
                                                 ],
-
-                                                // آیکون‌های پیام ربات
                                                 if (!message.isUser) ...[
-                                                  // ترتیب از راست به چپ: دیسلایک، لایک، کپی، رفرش
                                                   _buildIconButton(
                                                     icon: SvgPicture.asset(
                                                       "assets/icons/Refresh.svg",
@@ -326,71 +344,79 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           return messageWidget;
                         },
                       ),
-                      // متن خوشامدگویی (روی لیست)
-                      ValueListenableBuilder<bool>(
-                        valueListenable: showWelcomeText,
-                        builder: (context, isVisible, child) {
-                          return AnimatedOpacity(
-                            duration: const Duration(milliseconds: 700),
-                            opacity: isVisible ? 1.0 : 0.0,
-                            curve: Curves.easeInOutCubic,
-                            child: IgnorePointer(
-                              ignoring: !isVisible,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Hero(
-                              tag: "appLogo",
-                              child: SvgPicture.asset(
-                                'assets/icons/logo.svg',
-                                width: screenWidth * 0.3,
-                                height: screenHeight * 0.13,
-                                color: context.colors.textIcon,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.1,
-                                vertical: screenHeight * 0.02,
-                              ),
-                              child: Text(
-                                'WisQu\nHello, What can I help \nyou with?',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
+
+                      // متن خوشامدگویی
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 700),
+                        opacity: _showWelcomeText ? 1.0 : 0.0,
+                        curve: Curves.easeInOutCubic,
+                        child: IgnorePointer(
+                          ignoring: !_showWelcomeText,
+                          child: Container(
+                            margin: EdgeInsets.only(top: headerHeight + 20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/icons/logo.svg',
+                                  width: screenWidth * 0.3,
+                                  height: screenHeight * 0.13,
                                   color: context.colors.textIcon,
-                                  fontSize: screenWidth * 0.05,
-                                  fontWeight: FontWeight.bold,
+                                  fit: BoxFit.contain,
                                 ),
-                              ),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: screenWidth * 0.1,
+                                    vertical: screenHeight * 0.02,
+                                  ),
+                                  child: Text(
+                                    'WisQu\nHello, What can I help \nyou with?',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: context.colors.textIcon,
+                                      fontSize: screenWidth * 0.05,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: AppHeader(
-                          scaffoldKey: _scaffoldKey,
-                          chatProvider: chatProvider,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                ChatInput(
-                  chatProvider: chatProvider,
-                  keyboardOpen: keyboardOpen,
-                  onSendMessage: _onSendMessage,
-                  isTyping: isTyping,
-                ),
               ],
+            ),
+          ),
+
+          // 🔹 هدر شیشه‌ای (بالا روی محتوا)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: AppHeader(
+              scaffoldKey: _scaffoldState,
+              chatProvider: chatProvider,
+              onNewChat: _startNewChat,
+            ),
+          ),
+
+          // 🔹 چت اینپوت شیشه‌ای (پایین روی محتوا)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: ChatInput(
+                chatProvider: chatProvider,
+                keyboardOpen: keyboardOpen,
+                onSendMessage: _onSendMessage,
+                isTyping: ValueNotifier(_isTyping),
+              ),
             ),
           ),
         ],
@@ -405,45 +431,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }) {
     return Tooltip(
       message: tooltip,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() {}),
-        onTapUp: (_) => setState(() {}),
-        child: IconButton(
-          icon: ColorFiltered(
-            colorFilter: ColorFilter.mode(
-              context.colors.textIcon, // همه آیکون‌ها این رنگ
-              BlendMode.srcIn,
-            ),
-            child: icon,
-          ),
-          onPressed: onPressed,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNewChatButton(ChatProvider chatProvider) {
-    return GestureDetector(
-      onTap: () {
-        chatProvider.startNewChat();
-        showWelcomeText.value = true;
-        _selectedMessageIndex.value = null;
-        FocusScope.of(context).unfocus();
-        _messageAnimController.reset();
-      },
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
-        child: // داخل _buildNewChatButton
-        SvgPicture.asset(
-          "assets/icons/newchat.svg",
-          width: 20,
-          height: 20,
+      child: IconButton(
+        icon: ColorFiltered(
           colorFilter: ColorFilter.mode(
             context.colors.textIcon,
             BlendMode.srcIn,
           ),
+          child: icon,
         ),
+        onPressed: onPressed,
       ),
     );
   }
