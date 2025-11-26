@@ -248,7 +248,7 @@ class _PasswordLoginPageState extends State<PasswordLoginPage>
                 child: CustomButton(
                   onPressed: _isLoading ? () {} : _performLogin,
                   isLoading: _isLoading,
-                  text: 'login',
+                  text: 'log in',
                 ),
               ),
             ],

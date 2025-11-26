@@ -68,7 +68,7 @@ class _AppSidebarState extends State<AppSidebar> {
             color: context.colors.sidebarHeaderBackground,
             height: kToolbarHeight + MediaQuery.of(context).padding.top + 8,
 
-            padding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 30, 16, 1),
             child: Row(
               children: [
                 // آواتار کاربر
@@ -104,7 +104,8 @@ class _AppSidebarState extends State<AppSidebar> {
                         ),
                         child: Container(
                           height: 42,
-                          padding: EdgeInsets.zero,
+                          width: 304,
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
                           decoration: BoxDecoration(
                             color: _isFocused
                                 ? context.colors.searchBoxFocusedBackground
@@ -187,7 +188,7 @@ class _AppSidebarState extends State<AppSidebar> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 5),
             child: Row(
               children: [
                 Text(
@@ -236,6 +237,7 @@ class _AppSidebarState extends State<AppSidebar> {
                           child: ListTile(
                             enableFeedback: false,
                             selected: chatProvider.currentChatId == chat.id,
+                            selectedColor: context.colors.hintText,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -280,6 +282,7 @@ class _AppSidebarState extends State<AppSidebar> {
                                 "assets/icons/3.svg",
                                 width: 18,
                                 height: 18,
+                                color: context.colors.primary,
                               ),
                               onPressed: () {
                                 _showBottomMenu(

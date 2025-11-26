@@ -78,7 +78,8 @@ class ChatProvider extends ChangeNotifier {
     final newId = DateTime.now().millisecondsSinceEpoch.toString();
     final newSession = ChatSession(
       id: newId,
-      title: "چت جدید", // بهتر از "New Chat"
+      title: "New Chat", // بهتر از "New Chat"
+
       messages: [],
       lastUpdated: DateTime.now(),
     );

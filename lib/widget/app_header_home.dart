@@ -28,7 +28,7 @@ class AppHeader extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
           height: kToolbarHeight + MediaQuery.of(context).padding.top + 8,
-          color: context.colors.background.withOpacity(0.07),
+          color: context.colors.background.withOpacity(0.06),
           padding: const EdgeInsets.only(top: 20, left: 12, right: 12),
           child: Consumer2<AuthProvider, ChatProvider>(
             builder: (context, authProvider, chatProvider, child) {
@@ -187,7 +187,7 @@ class AppHeader extends StatelessWidget {
           width: 20,
           height: 20,
           colorFilter: ColorFilter.mode(
-            context.colors.textIcon,
+            context.colors.primary,
             BlendMode.srcIn,
           ),
         ),

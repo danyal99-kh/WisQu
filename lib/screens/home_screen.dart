@@ -353,7 +353,10 @@ class _HomeScreenState extends State<HomeScreen>
                         child: IgnorePointer(
                           ignoring: !_showWelcomeText,
                           child: Container(
-                            margin: EdgeInsets.only(top: headerHeight + 20),
+                            margin: EdgeInsets.only(
+                              top: headerHeight,
+                              bottom: 100,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
